@@ -1,0 +1,34 @@
+<div ng-controller="reportEditController" style="margin: 10px">
+	<div class="row">
+		<div class="col-xs-12">
+			<div class="form-group">
+				<input type="text" class="form-control" style="font-size: 50px; height: 80px; margin: 0;" placeholder="Title">
+			</div>
+		</div>
+	</div>
+	<div class="row" style="height: 500px; margin: 0px;">
+		<div class="col-xs-6" style="height: 100%; overflow: scroll; border: solid 1px #999; padding: 0; border-radius: 4px 0 0 4px">
+			<textarea style="width: 100%; height: 100%; border: 0; margin: 0; border-radius: 4px" ng-model="report.content"></textarea>
+		</div>
+		<div class="col-xs-6" style="height: 100%; overflow: scroll; border: solid 1px #999; border-radius: 0 4px 4px 0">
+			<div marked="report.content" style="border-radius: 4px"></div>
+		</div>
+	</div>
+	<div class="row" style="margin: 10px">
+		<div class="col-xs-3 col-xs-offset-9">
+			<div class="btn-group" align="right">
+				<button type="button" class="btn btn-default" style="width: 150px;" ng-click="doAction()">{{action}}</button>
+				<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+					<span class="caret"></span> <span class="sr-only">Toggle Dropdown</span>
+				</button>
+				<ul class="dropdown-menu" role="menu">
+					<li><a href="#" ng-click="changeAction('save')">save</a></li>
+					<li><a href="#" ng-click="changeAction('save as draft')">save as draft</a></li>
+					<li><a href="#" ng-click="changeAction('save as private')">save as private</a></li>
+					<li class="divider"></li>
+					<li><a href="#" ng-click="changeAction('delete')">delete</a></li>
+				</ul>
+			</div>
+		</div>
+	</div>
+</div>
