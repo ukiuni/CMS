@@ -19,6 +19,7 @@ public class Report {
 	private Account user;
 	private String title;
 	private String content;
+	private String key;
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date createdAt;
 	@Temporal(TemporalType.TIMESTAMP)
@@ -90,6 +91,15 @@ public class Report {
 
 	public void setVersion(long version) {
 		this.version = version;
+	}
+
+
+	public String getKey() {
+		return key;
+	}
+
+	public void setKey(String key) {
+		this.key = key;
 	}
 
 

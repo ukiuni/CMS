@@ -24,6 +24,7 @@ public class Account {
 	@Column(unique = true, nullable = false)
 	private String mail;
 	private String profile;
+	private String passwordHashed;
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date createdAt;
 	@Temporal(TemporalType.TIMESTAMP)
@@ -109,6 +110,14 @@ public class Account {
 	@Override
 	public String toString() {
 		return "Account [id=" + id + ", name=" + name + ", mail=" + mail + ", profile=" + profile + ", createdAt=" + createdAt + ", updatedAt=" + updatedAt + ", status=" + status + ", iconUrl=" + iconUrl + ", version=" + version + "]";
+	}
+
+	public String getPasswordHashed() {
+		return passwordHashed;
+	}
+
+	public void setPasswordHashed(String passwordHashed) {
+		this.passwordHashed = passwordHashed;
 	}
 
 }

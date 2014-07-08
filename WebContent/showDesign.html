@@ -25,73 +25,50 @@
 	<div id="header" ng-include="'template/header.html'"></div>
 	<div id="content" ng-view></div>
 	<script type="text/javascript">
+		var controllerName = "myPageController"
+		var templateName = 'template/myPage.html'
 		var myApp = angular.module('myApp', [ 'ui.sortable', 'ui.bootstrap', 'hc.marked', 'ngRoute' ]);
 		myApp.config([ 'markedProvider', '$routeProvider', '$locationProvider', function(markedProvider, $routeProvider, $locationProvider) {
-			markedProvider.setOptions({
-				gfm : true,
-				tables : true,
-				breaks : true,
-				highlight : function(code) {
-					return hljs.highlightAuto(code).value;
-				}
-			});
-			$routeProvider.when('/', {
-				templateUrl : 'template/top.html',
-				controller : 'topController'
-			}).when('/myPage', {
-				templateUrl : 'template/myPage.html',
-				controller : 'myPageController'
-			}).when('/editReport', {
-				templateUrl : 'template/editReport.html',
-				controller : 'reportEditController'
+			$routeProvider.when('/showDesign.html', {
+				templateUrl : templateName,
+				controller : controllerName
 			}).otherwise({
 				redirectTo : '/'
 			});
 			$locationProvider.html5Mode(true);
 		} ]);
-		myApp.controller("topController", [ "$rootScope", "$scope", "$http", "$location", function($rootScope, $scope, $http, $location) {
-			$scope.createAccount = function() {
-				$http.post("api/account", $scope.newAccount).success(function(data) {
-					$rootScope.loginAccount = data;
-					$location.path('/myPage');
-				}).error(function(e) {
-					console.log("error" + e);
-				});
-			}
-			$scope.login = function() {
-				$http.get("api/account/login", $scope.loginAccount).success(function(data) {
-					$rootScope.loginAccount = data;
-					$location.path('/myPage');
-				}).error(function(e) {
-					console.log("error" + e);
-				});
-			}
-			$scope.action = "save";
-		} ]);
-		myApp.controller("myPageController", [ "$scope", "$http", function($scope, $http) {
-			$http.get("api/report/load", $scope.newAccount).success(function(data) {
-				$scope.reports = data;
-			}).error(function(e) {
-				console.log("error" + e);
-			});
-		} ]);
-		myApp.controller("reportEditController", [ "$scope", "$http", function($scope, $http) {
-			$scope.report = {
-				content : ""
+		myApp.controller(controllerName, [ "$rootScope", "$scope", "$http", "$location", function($rootScope, $scope, $http, $location) {
+			$rootScope.loginAccount = {
+				name : "myName",
+				mail : "mail@gmail.com",
+				profile : "my profile",
+				iconURL : "https://secure.gravatar.com/avatar/0e4f654b5b1a0f8a798585fb51eb1191?d=https://a248.e.akamai.net/assets.github.com%2Fimages%2Fgravatars%2Fgravatar-user-420.png"
 			};
-			$scope.doAction = function() {
-				console.log('doAction = ' + $scope.action);
-				$http.post("api/report", $report, function(data) {
-					console.log("completed" + data);
-				}).error(function(e) {
-					console.log("error" + e);
-				});
-
-			}
-			$scope.changeAction = function(action) {
-				$scope.action = action;
-			}
-			$scope.action = "save";
+			$scope.reports = [ {
+				key : "asdfasdfasdf",
+				title : "report tilte 1",
+				content : "this is content",
+				createdAt : 1288323623006,
+				status : "DELETED"
+			}, {
+				key : "asdfasdfasdf",
+				title : "report tilte 2",
+				content : "this is content",
+				createdAt : 1288323623006,
+				status : "DELETED"
+			}, {
+				key : "asdfasdfasdf",
+				title : "report tilte 3",
+				content : "this is content",
+				createdAt : 1288323623006,
+				status : "DELETED"
+			}, {
+				key : "asdfasdfasdf",
+				title : "report tilte 4",
+				content : "this is content",
+				createdAt : 1288323623006,
+				status : "DELETED"
+			}]
 		} ]);
 	</script>
 	<div id="header" ng-include="'template/header.html'"></div>
