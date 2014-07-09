@@ -6,7 +6,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.List;
-import java.util.ResourceBundle;
 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
@@ -15,8 +14,8 @@ import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
-import javax.xml.bind.annotation.XmlRootElement;
 
 import net.arnx.jsonic.JSON;
 import net.arnx.jsonic.util.Base64;
@@ -24,6 +23,7 @@ import net.arnx.jsonic.util.Base64;
 import org.apache.commons.beanutils.BeanUtils;
 import org.ukiuni.report.ResponseServerStatusException;
 import org.ukiuni.report.entity.Account;
+import org.ukiuni.report.entity.AccountAccessKey;
 import org.ukiuni.report.service.AccountService;
 import org.ukiuni.report.util.DBUtil;
 
@@ -52,7 +52,8 @@ public class AccountAction {
 		return returnAccount;
 	}
 
-	@GET
+	@POST
+	@Path("/login")
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	public AccountDto login(AccountDto saveAccount) throws IllegalAccessException, InvocationTargetException, NoSuchAlgorithmException, UnsupportedEncodingException {
@@ -61,12 +62,25 @@ public class AccountAction {
 		if (null == account || !account.getPasswordHashed().equals(Base64.encode(MessageDigest.getInstance("SHA1").digest(saveAccount.getPassword().getBytes("UTF-8"))))) {
 			throw new ResponseServerStatusException(400, "email");
 		}
+		AccountAccessKey accountAccessKey = accountService.generateAccessKey(account);
+		AccountDto returnAccount = new AccountDto();
+		BeanUtils.copyProperties(returnAccount, account);
+		returnAccount.setAccessKey(accountAccessKey.getHash());
+		return returnAccount;
+	}
+
+	@GET
+	@Path("loadByAccessKey")
+	public AccountDto loadByAccessKey(@QueryParam("accessKey") String accessKey) throws IllegalAccessException, InvocationTargetException {
+		Account account = accountService.loadByAccessKey(accessKey);
 		AccountDto returnAccount = new AccountDto();
 		BeanUtils.copyProperties(returnAccount, account);
 		return returnAccount;
 	}
 
 	@POST
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
 	@Path("/update")
 	public void update(String body) throws IllegalAccessException, InvocationTargetException {
 		AccountDto saveAccount = JSON.decode(body, AccountDto.class);
@@ -84,14 +98,15 @@ public class AccountAction {
 	public static class AccountDto implements Serializable {
 		@Size(min = 6, max = 20, message = "An event's name must contain between 6 and 1000 characters")
 		// 効かない
-		public String name;
+		private String name;
 		@NotNull
-		public String mail;
+		private String mail;
 		@NotNull
-		public String password;
+		private String password;
 		@NotNull
-		public String profile;
-		public String iconUrl;
+		private String profile;
+		private String iconUrl;
+		private String accessKey;
 
 		public String getName() {
 			return name;
@@ -135,7 +150,15 @@ public class AccountAction {
 
 		@Override
 		public String toString() {
-			return "SaveAccount [name=" + name + ", mail=" + mail + ", password" + password + ", profile=" + profile + ", iconUrl=" + iconUrl + "]";
+			return "SaveAccount [name=" + name + ", mail=" + mail + ", password=" + password + ", profile=" + profile + ", iconUrl=" + iconUrl + "]";
+		}
+
+		public String getAccessKey() {
+			return accessKey;
+		}
+
+		public void setAccessKey(String accessKey) {
+			this.accessKey = accessKey;
 		}
 	}
 

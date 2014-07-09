@@ -39,7 +39,7 @@
 				templateUrl : 'template/top.html',
 				controller : 'topController'
 			}).when('/myPage', {
-				templateUrl : 'template/myPage.html',
+				templateUrl : 'template/myPage.html?' + new Date().getTime(),
 				controller : 'myPageController'
 			}).when('/editReport', {
 				templateUrl : 'template/editReport.html',
@@ -59,7 +59,7 @@
 				});
 			}
 			$scope.login = function() {
-				$http.get("api/account/login", $scope.loginAccount).success(function(data) {
+				$http.post("api/account/login", $scope.loginAccount).success(function(data) {
 					$rootScope.loginAccount = data;
 					$location.path('/myPage');
 				}).error(function(e) {
@@ -68,20 +68,36 @@
 			}
 			$scope.action = "save";
 		} ]);
-		myApp.controller("myPageController", [ "$scope", "$http", function($scope, $http) {
-			$http.get("api/report/load", $scope.newAccount).success(function(data) {
+		myApp.controller("myPageController", [ "$scope", "$http", "$location", function($scope, $http, $location) {
+			console.log("asdfasd" + $scope.loginAccount.accessKey);
+			$http.get("api/report/loadByAccessKey", {
+				params : {
+					accessKey : $scope.loginAccount.accessKey
+				}
+			}).success(function(data) {
 				$scope.reports = data;
 			}).error(function(e) {
 				console.log("error" + e);
 			});
+			$scope.createReport = function() {
+				$location.path('/editReport');
+
+			}
 		} ]);
-		myApp.controller("reportEditController", [ "$scope", "$http", function($scope, $http) {
-			$scope.report = {
-				content : ""
-			};
+		myApp.controller("reportEditController", [ "$rootScope", "$scope", "$http", function($rootScope, $scope, $http) {
+			$http.get("api/report/create", {
+				params : {
+					accessKey : $scope.loginAccount.accessKey
+				}
+			}).success(function(data) {
+				$scope.report = data;
+			}).error(function(e) {
+				console.log("error" + e);
+			});
 			$scope.doAction = function() {
 				console.log('doAction = ' + $scope.action);
-				$http.post("api/report", $report, function(data) {
+				$scope.report.accountAccessKey = $rootScope.loginAccount.accessKey;
+				$http.post("api/report", $scope.report, function(data) {
 					console.log("completed" + data);
 				}).error(function(e) {
 					console.log("error" + e);

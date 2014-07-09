@@ -100,4 +100,16 @@ public class DBUtil {
 	public static interface Query<T> {
 		public T query(EntityManager em);
 	}
+
+	public <T> List<T> findList(final Class<T> clazz, String string, final Object account) {
+		Query<List<T>> query = new Query<List<T>>() {
+			public List<T> query(EntityManager em) {
+				CriteriaBuilder cb = em.getCriteriaBuilder();
+				CriteriaQuery<T> cq = cb.createQuery(clazz);
+				Root<T> r = cq.from(clazz);
+				return em.createQuery(cq.select(r)).getResultList();
+			}
+		};
+		return query(query);
+	}
 }

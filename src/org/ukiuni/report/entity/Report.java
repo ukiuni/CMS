@@ -11,12 +11,13 @@ import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.persistence.Version;
 
 @Entity
 public class Report {
 	@EmbeddedId
 	private ReportPK pk;
-	private Account user;
+	private Account account;
 	private String title;
 	private String content;
 	private String key;
@@ -26,7 +27,6 @@ public class Report {
 	private Date updatedAt;
 	@Enumerated(EnumType.STRING)
 	private Status status;
-	private long version;
 
 	public ReportPK getPk() {
 		return pk;
@@ -34,14 +34,6 @@ public class Report {
 
 	public void setPk(ReportPK pk) {
 		this.pk = pk;
-	}
-
-	public Account getUser() {
-		return user;
-	}
-
-	public void setUser(Account user) {
-		this.user = user;
 	}
 
 	public String getTitle() {
@@ -84,16 +76,6 @@ public class Report {
 		this.status = status;
 	}
 
-
-	public long getVersion() {
-		return version;
-	}
-
-	public void setVersion(long version) {
-		this.version = version;
-	}
-
-
 	public String getKey() {
 		return key;
 	}
@@ -102,6 +84,13 @@ public class Report {
 		this.key = key;
 	}
 
+	public Account getAccount() {
+		return account;
+	}
+
+	public void setAccount(Account account) {
+		this.account = account;
+	}
 
 	public static enum Status {
 		DRAFT, PUBLISHED, PRIVATE, DELETED
@@ -114,6 +103,7 @@ public class Report {
 		@GeneratedValue
 		private long id;
 
+		@Version
 		private long version;
 
 		public long getId() {
@@ -131,7 +121,5 @@ public class Report {
 		public void setVersion(long version) {
 			this.version = version;
 		}
-
 	}
-
 }

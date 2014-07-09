@@ -1,9 +1,13 @@
 package org.ukiuni.report.service;
 
+import java.util.Date;
+import java.util.UUID;
+
 import javax.persistence.NoResultException;
 
 import org.apache.commons.beanutils.BeanUtils;
 import org.ukiuni.report.entity.Account;
+import org.ukiuni.report.entity.AccountAccessKey;
 import org.ukiuni.report.util.DBUtil;
 
 public class AccountService {
@@ -11,6 +15,16 @@ public class AccountService {
 
 	public void save(Account account) {
 		dbUtil.persist(account);
+	}
+
+	public AccountAccessKey generateAccessKey(Account account) {
+		AccountAccessKey accountAccessKey = new AccountAccessKey();
+		accountAccessKey.setAccount(account);
+		accountAccessKey.setHash(UUID.randomUUID().toString());
+		accountAccessKey.setCreatedAt(new Date());
+		accountAccessKey.setStatus(org.ukiuni.report.entity.AccountAccessKey.Status.CREATED);
+		dbUtil.persist(accountAccessKey);
+		return accountAccessKey;
 	}
 
 	public Account loadByName(String name) {
@@ -57,6 +71,18 @@ public class AccountService {
 			return true;
 		} catch (NoResultException e) {
 			return false;
+		}
+	}
+
+	public Account loadByAccessKey(String accessKey) {
+		try {
+			AccountAccessKey accountAccessKey = dbUtil.findSingleEquals(AccountAccessKey.class, "hash", accessKey);
+			if (null == accountAccessKey) {
+				return null;
+			}
+			return accountAccessKey.getAccount();
+		} catch (NoResultException e) {
+			return null;
 		}
 	}
 }
