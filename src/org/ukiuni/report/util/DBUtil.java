@@ -49,18 +49,18 @@ public class DBUtil {
 		entityTransaction.commit();
 	}
 
-	public <T> T query(Query<T> query) {
+	public <T> T execute(Work<T> query) {
 		EntityManager em = createEntityManager();
 		EntityTransaction entityTransaction = em.getTransaction();
 		entityTransaction.begin();
-		T result = query.query(em);
+		T result = query.execute(em);
 		entityTransaction.commit();
 		return result;
 	}
 
 	public <T> T findSingleEquals(final Class<T> clazz, final String param, final Object equalsTarget) {
-		Query<T> query = new Query<T>() {
-			public T query(EntityManager em) {
+		Work<T> work = new Work<T>() {
+			public T execute(EntityManager em) {
 				CriteriaBuilder cb = em.getCriteriaBuilder();
 				CriteriaQuery<T> cq = cb.createQuery(clazz);
 				Root<T> r = cq.from(clazz);
@@ -68,7 +68,7 @@ public class DBUtil {
 				return em.createQuery(cq.select(r)).getSingleResult();
 			}
 		};
-		return query(query);
+		return execute(work);
 	}
 
 	public <T> T find(Class<T> clazz, Object obj) {
@@ -76,15 +76,15 @@ public class DBUtil {
 	}
 
 	public <T> List<T> findAll(final Class<T> clazz) {
-		Query<List<T>> query = new Query<List<T>>() {
-			public List<T> query(EntityManager em) {
+		Work<List<T>> work = new Work<List<T>>() {
+			public List<T> execute(EntityManager em) {
 				CriteriaBuilder cb = em.getCriteriaBuilder();
 				CriteriaQuery<T> cq = cb.createQuery(clazz);
 				Root<T> r = cq.from(clazz);
 				return em.createQuery(cq.select(r)).getResultList();
 			}
 		};
-		return query(query);
+		return execute(work);
 	}
 
 	public static void closeAll() {
@@ -97,19 +97,24 @@ public class DBUtil {
 
 	}
 
-	public static interface Query<T> {
-		public T query(EntityManager em);
+	public static interface Work<T> {
+		public T execute(EntityManager em);
 	}
 
-	public <T> List<T> findList(final Class<T> clazz, String string, final Object account) {
-		Query<List<T>> query = new Query<List<T>>() {
-			public List<T> query(EntityManager em) {
+	public <T> List<T> findList(final Class<T> clazz, final String key, final Object argument, final String... orders) {
+		Work<List<T>> query = new Work<List<T>>() {
+			public List<T> execute(EntityManager em) {
 				CriteriaBuilder cb = em.getCriteriaBuilder();
 				CriteriaQuery<T> cq = cb.createQuery(clazz);
 				Root<T> r = cq.from(clazz);
-				return em.createQuery(cq.select(r)).getResultList();
+				cq.select(r);
+				cq.where(cb.and(cb.equal(r.get(key).as(argument.getClass()), argument)));
+				for (String order : orders) {
+					cq.orderBy(cb.desc(r.get(order)));
+				}
+				return em.createQuery(cq).getResultList();
 			}
 		};
-		return query(query);
+		return execute(query);
 	}
 }

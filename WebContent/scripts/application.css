@@ -1,0 +1,9 @@
+.reportListRow {
+	
+}
+
+.reportListRow:HOVER {
+	cursor: pointer;
+	background-color: #2d6ca2;
+	color: white;
+}

@@ -1,6 +1,6 @@
 <div ng-controller="myPageController" style="margin: 10px">
 	<div class="row" style="height: 500px; margin: 0px;">
-		<div class="col-xs-4" style="height: 100%; overflow: scroll; padding: 0; border-radius: 4px 0 0 4px">
+		<div class="col-xs-4" style="height: 100%; padding: 0; border-radius: 4px 0 0 4px">
 			<div class="row">
 				<div class="col-xs-4">
 					<img style="width: 100%" src="{{loginAccount.iconURL}}">
@@ -21,19 +21,19 @@
 			</div>
 
 		</div>
-		<div class="col-xs-8" style="height: 100%; overflow: scroll;">
+		<div class="col-xs-8" style="height: 100%;">
 			<div class="row">
 				<div class="col-xs-12" style="margin-bottom: 10px">
 					<button type="button" class="btn btn-primary" ng-click="createReport()">Create New Report</button>
 				</div>
 			</div>
-			<div class="row" ng-click="showReport(report.key)" ng-repeat="report in reports" style="border-bottom: solid 1px #CCC">
+			<div class="row reportListRow" ng-click="showReport(report.key)" ng-repeat="report in reports" style="border-bottom: solid 1px #CCC">
 				<div class="col-xs-8">
 					<h4>{{report.title}}</h4>
 				</div>
 				<div class="col-xs-2">{{report.createdAt | date:"yyyy/MM/dd"}}</div>
 				<div class="col-xs-2">
-					<span class="label label-primary">{{report.status}}</span>
+					<span class="label label-primary">{{report.draft}}</span>
 				</div>
 			</div>
 		</div>

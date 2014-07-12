@@ -20,6 +20,7 @@
 <script type="text/javascript" src="scripts/angular-marked.min.js"></script>
 <link rel="stylesheet" href="//yandex.st/highlightjs/8.0/styles/github.min.css">
 <script src="//yandex.st/highlightjs/8.0/highlight.min.js"></script>
+<link rel="stylesheet" href="scripts/application.css">
 </head>
 <body>
 	<div id="header" ng-include="'template/header.html'"></div>
@@ -42,14 +43,18 @@
 				templateUrl : 'template/myPage.html?' + new Date().getTime(),
 				controller : 'myPageController'
 			}).when('/editReport', {
-				templateUrl : 'template/editReport.html',
-				controller : 'reportEditController'
+				templateUrl : 'template/editReport.html?' + new Date().getTime(),
+				controller : 'editReportController'
 			}).otherwise({
 				redirectTo : '/'
 			});
 			$locationProvider.html5Mode(true);
 		} ]);
 		myApp.controller("topController", [ "$rootScope", "$scope", "$http", "$location", function($rootScope, $scope, $http, $location) {
+			if ($rootScope.loginAccount) {
+				$location.path('/myPage');
+				return;
+			}
 			$scope.createAccount = function() {
 				$http.post("api/account", $scope.newAccount).success(function(data) {
 					$rootScope.loginAccount = data;
@@ -68,8 +73,11 @@
 			}
 			$scope.action = "save";
 		} ]);
-		myApp.controller("myPageController", [ "$scope", "$http", "$location", function($scope, $http, $location) {
-			console.log("asdfasd" + $scope.loginAccount.accessKey);
+		myApp.controller("myPageController", [ "$rootScope", "$scope", "$http", "$location", function($rootScope, $scope, $http, $location) {
+			if (!$rootScope.loginAccount) {
+				$location.path('/');
+				return;
+			}
 			$http.get("api/report/loadByAccessKey", {
 				params : {
 					accessKey : $scope.loginAccount.accessKey
@@ -81,28 +89,46 @@
 			});
 			$scope.createReport = function() {
 				$location.path('/editReport');
-
+			}
+			$scope.showReport = function(reportKey) {
+				console.log("showReport = " + reportKey);
+				$location.search('key', reportKey).path('/editReport');
 			}
 		} ]);
-		myApp.controller("reportEditController", [ "$rootScope", "$scope", "$http", function($rootScope, $scope, $http) {
-			$http.get("api/report/create", {
-				params : {
-					accessKey : $scope.loginAccount.accessKey
-				}
-			}).success(function(data) {
+		myApp.controller("editReportController", [ "$rootScope", "$scope", "$http", "$location", function($rootScope, $scope, $http, $location) {
+			if (!$rootScope.loginAccount) {
+				$location.path('/');
+				return;
+			}
+			var loadSuccess = function(data) {
 				$scope.report = data;
-			}).error(function(e) {
+			};
+			var loadFail = function(e) {
 				console.log("error" + e);
-			});
+				$location.path('/');
+			};
+			if ($location.search()["key"]) {
+				$http.get("api/report/load/" + $location.search()["key"], {
+					params : {
+						accessKey : $scope.loginAccount.accessKey,
+					}
+				}).success(loadSuccess).error(loadFail);
+			} else {
+				$http.get("api/report/create", {
+					params : {
+						accessKey : $scope.loginAccount.accessKey
+					}
+				}).success(loadSuccess).error(loadFail);
+			}
 			$scope.doAction = function() {
 				console.log('doAction = ' + $scope.action);
 				$scope.report.accountAccessKey = $rootScope.loginAccount.accessKey;
-				$http.post("api/report", $scope.report, function(data) {
+				$http.post("api/report", $scope.report).success(function(data) {
 					console.log("completed" + data);
+					$location.search("lastAction", "{\"action\":\"saved\",\"key\":\"" + $scope.report.key + "\"}").path('/myPage');
 				}).error(function(e) {
 					console.log("error" + e);
 				});
-
 			}
 			$scope.changeAction = function(action) {
 				$scope.action = action;

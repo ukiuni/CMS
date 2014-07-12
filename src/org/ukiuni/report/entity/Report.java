@@ -9,6 +9,7 @@ import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
+import javax.persistence.ManyToOne;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Version;
@@ -17,6 +18,7 @@ import javax.persistence.Version;
 public class Report {
 	@EmbeddedId
 	private ReportPK pk;
+	@ManyToOne
 	private Account account;
 	private String title;
 	private String content;
@@ -90,6 +92,16 @@ public class Report {
 
 	public void setAccount(Account account) {
 		this.account = account;
+	}
+
+	@Override
+	public int hashCode() {
+		return new Long(pk.id).hashCode();
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		return (obj instanceof Report && ((Report) obj).getPk().getId() == pk.id);
 	}
 
 	public static enum Status {

@@ -120,4 +120,13 @@ public class Account {
 		this.passwordHashed = passwordHashed;
 	}
 
+	@Override
+	public int hashCode() {
+		return new Long(id).hashCode();
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		return (obj instanceof Account && ((Account) obj).getId() == id);
+	}
 }
