@@ -11,12 +11,15 @@ import org.ukiuni.report.entity.Report;
 import org.ukiuni.report.entity.Report.ReportPK;
 import org.ukiuni.report.entity.Report.Status;
 import org.ukiuni.report.util.DBUtil;
+import org.ukiuni.report.util.DBUtil.Order.SequenceTo;
+import org.ukiuni.report.util.DBUtil.WhereCondition.Match;
+import org.ukiuni.report.util.DBUtil.WhereCondition.Rule;
 
 public class ReportService {
 	public DBUtil dbUtil = DBUtil.create("org.ukiuni.report");
 
 	public List<Report> loadByAccount(Account account) {
-		return dbUtil.findList(Report.class, "account", account, "updatedAt");
+		return dbUtil.findList(Report.class, new DBUtil.WhereCondition[] { new DBUtil.WhereCondition("account", account, Match.EQ, Rule.AND) }, new DBUtil.Order("updatedAt", SequenceTo.DESC));
 	}
 
 	public Report find(long id, long version) {

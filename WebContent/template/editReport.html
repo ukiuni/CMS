@@ -15,14 +15,15 @@
 		</div>
 	</div>
 	<div class="row" style="margin: 10px">
-		<div class="col-xs-3 col-xs-offset-9">
+		<div class="col-xs-12" align="right">
+			<button type="button" class="btn btn-default" ng-click="cancel()">Cancel</button>
 			<div class="btn-group" align="right">
-				<button type="button" class="btn btn-default" style="width: 150px;" ng-click="doAction()">{{action}}</button>
+				<button type="button" class="btn btn-primary" style="width: 150px;" ng-click="doAction()">{{action}}</button>
 				<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
 					<span class="caret"></span> <span class="sr-only">Toggle Dropdown</span>
 				</button>
 				<ul class="dropdown-menu" role="menu">
-					<li><a ng-click="changeAction('save')">save</a></li>
+					<li><a ng-click="changeAction('publish')">publish</a></li>
 					<li><a ng-click="changeAction('save as draft')">save as draft</a></li>
 					<li><a ng-click="changeAction('save as private')">save as private</a></li>
 					<li class="divider"></li>

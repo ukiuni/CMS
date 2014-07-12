@@ -21,14 +21,12 @@ public class JSONReader implements MessageBodyReader {
 
 	@Override
 	public boolean isReadable(Class arg0, Type arg1, Annotation[] arg2, MediaType arg3) {
-		System.out.println("isReadable");
 		return true;
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
 	public Object readFrom(Class clazz, Type arg1, Annotation[] arg2, MediaType arg3, MultivaluedMap arg4, InputStream in) throws IOException, WebApplicationException {
-		System.out.println("readFrom");
 		return JSON.decode(in, clazz);
 	}
 }

@@ -73,7 +73,7 @@ public class AccountAction {
 	public AccountDto login(AccountDto saveAccount) throws IllegalAccessException, InvocationTargetException, NoSuchAlgorithmException, UnsupportedEncodingException {
 		Account account = accountService.findByName(saveAccount.name);
 		if (null == account || !account.getPasswordHashed().equals(Base64.encode(MessageDigest.getInstance("SHA1").digest(saveAccount.getPassword().getBytes("UTF-8"))))) {
-			throw new ResponseServerStatusException(400, "email");
+			throw new ResponseServerStatusException(400, "name or password not match");
 		}
 		AccountAccessKey accountAccessKey = accountService.generateAccessKey(account);
 		AccountDto returnAccount = new AccountDto();

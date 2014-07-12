@@ -18,6 +18,7 @@ import javax.ws.rs.core.MediaType;
 import org.apache.commons.beanutils.BeanUtils;
 import org.ukiuni.report.entity.Account;
 import org.ukiuni.report.entity.Report;
+import org.ukiuni.report.entity.Report.Status;
 import org.ukiuni.report.service.AccountService;
 import org.ukiuni.report.service.ReportService;
 
@@ -64,13 +65,19 @@ public class ReportAction {
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	public ReportDto saveReport(ReportDto reportDto) throws IllegalAccessException, InvocationTargetException {
-		System.out.println(reportDto);
 		Account account = accountService.findByAccessKey(reportDto.accountAccessKey);
 		Report report = reportService.findByKey(reportDto.key);
 		if (!report.getAccount().equals(account)) {
 			throw new BadRequestException("report is not yours");
 		}
 		BeanUtils.copyProperties(report, reportDto);
+		if (reportDto.draft) {
+			report.setStatus(Status.DRAFT);
+		} else if (reportDto.publish) {
+			report.setStatus(Status.PUBLISHED);
+		} else {
+			report.setStatus(Status.PRIVATE);
+		}
 		reportService.update(report);
 		BeanUtils.copyProperties(reportDto, report);
 		return reportDto;
@@ -92,7 +99,8 @@ public class ReportAction {
 		if (report.getAccount().getId() != account.getId()) {
 			throw new BadRequestException("this report is not yours");
 		}
-		reportService.delete(report);
+		report.setStatus(Status.DELETED);
+		reportService.update(report);
 	}
 
 	public static class ReportDto {
@@ -101,6 +109,7 @@ public class ReportAction {
 		private String content;
 		private String key;
 		private boolean draft;
+		private boolean publish;
 
 		public String getAccountAccessKey() {
 			return accountAccessKey;
@@ -145,6 +154,14 @@ public class ReportAction {
 		@Override
 		public String toString() {
 			return "ReportDto [accountAccessKey=" + accountAccessKey + ", title=" + title + ", content=" + content + ", key=" + key + ", draft=" + draft + "]";
+		}
+
+		public boolean isPublish() {
+			return publish;
+		}
+
+		public void setPublish(boolean publish) {
+			this.publish = publish;
 		}
 	}
 }

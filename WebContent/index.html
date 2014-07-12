@@ -93,6 +93,9 @@
 				console.log("error" + e);
 			});
 			$scope.createReport = function() {
+				for ( var i in $location.search()) {
+					$location.search(i, null)
+				}
 				$location.path('/editReport');
 			}
 			$scope.editProfile = function() {
@@ -131,8 +134,8 @@
 			$scope.doAction = function() {
 				console.log('doAction = ' + $scope.action);
 				if ("delete" != $scope.action) {
-					$scope.report.isDraft = $scope.action == "save as draft";
-					$scope.report.isPrivate = $scope.action == "save as private";
+					$scope.report.draft = $scope.action == "save as draft";
+					$scope.report.publish = $scope.action == "publish";
 					$scope.report.accountAccessKey = $rootScope.loginAccount.accessKey;
 					$http.put("api/report", $scope.report).success(function(data) {
 						$location.search("lastAction", "{\"action\":\"saved\",\"key\":\"" + $scope.report.key + "\"}").path('/myPage');
@@ -172,6 +175,12 @@
 			$scope.changeAction = function(action) {
 				$scope.action = action;
 			};
+			$scope.cancel = function() {
+				for ( var i in $location.search()) {
+					$location.search(i, null)
+				}
+				$location.path('/myPage');
+			};
 			$scope.deleteReport = function(reportKey) {
 				$http.put("api/report/delete", {
 					key : reportKey,
@@ -182,7 +191,7 @@
 					console.log("e");
 				});
 			};
-			$scope.action = "save";
+			$scope.action = "save as draft";
 		} ]);
 		myApp.controller("editProfileController", [ "$rootScope", "$scope", "$http", "$location", "$upload", function($rootScope, $scope, $http, $location, $upload) {
 			if (!$rootScope.loginAccount) {
