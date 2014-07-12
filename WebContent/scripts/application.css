@@ -7,3 +7,9 @@
 	background-color: #2d6ca2;
 	color: white;
 }
+
+.iconWrap {
+	width: 120px;
+	height: 120px;
+	overflow: hidden;
+}

@@ -23,6 +23,7 @@ public class Account {
 	private String name;
 	@Column(unique = true, nullable = false)
 	private String mail;
+	private String fullName;
 	private String profile;
 	private String passwordHashed;
 	@Temporal(TemporalType.TIMESTAMP)
@@ -118,6 +119,14 @@ public class Account {
 
 	public void setPasswordHashed(String passwordHashed) {
 		this.passwordHashed = passwordHashed;
+	}
+
+	public String getFullName() {
+		return fullName;
+	}
+
+	public void setFullName(String fullName) {
+		this.fullName = fullName;
 	}
 
 	@Override

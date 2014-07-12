@@ -12,6 +12,7 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 
+import org.apache.commons.beanutils.BeanUtils;
 import org.eclipse.persistence.internal.jpa.EntityManagerFactoryImpl;
 import org.eclipse.persistence.sessions.server.ServerSession;
 
@@ -30,6 +31,9 @@ public class DBUtil {
 			synchronized (DBUtil.class) {
 				if (!openedFactoryMap.containsKey(factoryName)) {
 					EntityManagerFactory factory = Persistence.createEntityManagerFactory(factoryName);
+					if (null == factory) {
+						throw new IllegalArgumentException("factoryName [\"" + factoryName + "\"] cant be created.");
+					}
 					openedFactoryMap.put(factoryName, factory);
 				}
 			}
@@ -58,13 +62,28 @@ public class DBUtil {
 		return result;
 	}
 
-	public <T> T findSingleEquals(final Class<T> clazz, final String param, final Object equalsTarget) {
+	public <T> T update(final Object id, final Object obj) {
+		return this.execute(new Work<T>() {
+			@Override
+			public T execute(EntityManager em) {
+				Object target = em.find(obj.getClass(), id);
+				try {
+					BeanUtils.copyProperties(target, obj);
+				} catch (Exception e) {
+					new RuntimeException(e);
+				}
+				return null;
+			}
+		});
+	}
+
+	public <T> T findSingleEquals(final Class<T> clazz, final String key, final Object equalsTarget) {
 		Work<T> work = new Work<T>() {
 			public T execute(EntityManager em) {
 				CriteriaBuilder cb = em.getCriteriaBuilder();
 				CriteriaQuery<T> cq = cb.createQuery(clazz);
 				Root<T> r = cq.from(clazz);
-				cq.where(cb.equal(r.get(param).as(equalsTarget.getClass()), equalsTarget));
+				cq.where(cb.equal(r.get(key).as(equalsTarget.getClass()), equalsTarget));
 				return em.createQuery(cq.select(r)).getSingleResult();
 			}
 		};
@@ -116,5 +135,15 @@ public class DBUtil {
 			}
 		};
 		return execute(query);
+	}
+
+	public <T> T delete(final Class<T> clazz, final Object id) {
+		return execute(new Work<T>() {
+			public T execute(EntityManager em) {
+				T obj = em.find(clazz, id);
+				em.remove(obj);
+				return obj;
+			}
+		});
 	}
 }

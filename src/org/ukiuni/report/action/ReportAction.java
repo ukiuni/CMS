@@ -8,7 +8,7 @@ import javax.ws.rs.BadRequestException;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.NotFoundException;
-import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -30,7 +30,7 @@ public class ReportAction {
 	@Path("loadByAccessKey")
 	@Produces(MediaType.APPLICATION_JSON)
 	public List<Report> loadByAccessKey(@QueryParam("accessKey") @NotNull String accessKey) {
-		Account account = accountService.loadByAccessKey(accessKey);
+		Account account = accountService.findByAccessKey(accessKey);
 		if (null == account) {
 			throw new NotFoundException("account not found");
 		}
@@ -41,7 +41,7 @@ public class ReportAction {
 	@Path("create")
 	@Produces(MediaType.APPLICATION_JSON)
 	public Report create(@QueryParam("accessKey") String accessKey) {
-		Account account = accountService.loadByAccessKey(accessKey);
+		Account account = accountService.findByAccessKey(accessKey);
 		if (null == account) {
 			throw new NotFoundException("account not found");
 		}
@@ -52,7 +52,7 @@ public class ReportAction {
 	@Path("load/{reportKey}")
 	@Produces(MediaType.APPLICATION_JSON)
 	public Report load(@QueryParam("accessKey") String accessKey, @PathParam("reportKey") String reportKey) {
-		Account account = accountService.loadByAccessKey(accessKey);
+		Account account = accountService.findByAccessKey(accessKey);
 		if (null == account) {
 			throw new NotFoundException("account not found");
 		}
@@ -60,12 +60,12 @@ public class ReportAction {
 		return report;
 	}
 
-	@POST
+	@PUT
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	public ReportDto saveReport(ReportDto reportDto) throws IllegalAccessException, InvocationTargetException {
 		System.out.println(reportDto);
-		Account account = accountService.loadByAccessKey(reportDto.accountAccessKey);
+		Account account = accountService.findByAccessKey(reportDto.accountAccessKey);
 		Report report = reportService.findByKey(reportDto.key);
 		if (!report.getAccount().equals(account)) {
 			throw new BadRequestException("report is not yours");
@@ -74,6 +74,25 @@ public class ReportAction {
 		reportService.update(report);
 		BeanUtils.copyProperties(reportDto, report);
 		return reportDto;
+	}
+
+	@PUT
+	@Path("delete")
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	public void delete(ReportDto reportDto) {
+		Account account = accountService.findByAccessKey(reportDto.getAccountAccessKey());
+		if (null == account) {
+			throw new NotFoundException("account not found");
+		}
+		Report report = reportService.findByKey(reportDto.getKey());
+		if (null == report) {
+			throw new NotFoundException("report not found");
+		}
+		if (report.getAccount().getId() != account.getId()) {
+			throw new BadRequestException("this report is not yours");
+		}
+		reportService.delete(report);
 	}
 
 	public static class ReportDto {

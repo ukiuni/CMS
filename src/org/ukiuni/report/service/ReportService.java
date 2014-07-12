@@ -4,16 +4,13 @@ import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
-import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 
-import org.apache.commons.beanutils.BeanUtils;
 import org.ukiuni.report.entity.Account;
 import org.ukiuni.report.entity.Report;
 import org.ukiuni.report.entity.Report.ReportPK;
 import org.ukiuni.report.entity.Report.Status;
 import org.ukiuni.report.util.DBUtil;
-import org.ukiuni.report.util.DBUtil.Work;
 
 public class ReportService {
 	public DBUtil dbUtil = DBUtil.create("org.ukiuni.report");
@@ -52,17 +49,11 @@ public class ReportService {
 
 	public void update(final Report report) {
 		report.setUpdatedAt(new Date());
-		dbUtil.execute(new Work<Report>() {
-			@Override
-			public Report execute(EntityManager em) {
-				Report registedReport = em.find(Report.class, report.getPk());
-				try {
-					BeanUtils.copyProperties(registedReport, report);
-				} catch (Exception e) {
-					new RuntimeException(e);
-				}
-				return null;
-			}
-		});
+		dbUtil.update(report.getPk(), report);
+	}
+
+	public void delete(Report report) {
+		dbUtil.delete(Report.class, report.getPk());
+
 	}
 }

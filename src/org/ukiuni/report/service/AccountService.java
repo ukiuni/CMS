@@ -17,6 +17,10 @@ public class AccountService {
 		dbUtil.persist(account);
 	}
 
+	public void update(Account account) {
+		dbUtil.update(account.getId(), account);
+	}
+
 	public AccountAccessKey generateAccessKey(Account account) {
 		AccountAccessKey accountAccessKey = new AccountAccessKey();
 		accountAccessKey.setAccount(account);
@@ -25,10 +29,6 @@ public class AccountService {
 		accountAccessKey.setStatus(org.ukiuni.report.entity.AccountAccessKey.Status.CREATED);
 		dbUtil.persist(accountAccessKey);
 		return accountAccessKey;
-	}
-
-	public Account loadByName(String name) {
-		return dbUtil.findSingleEquals(Account.class, "name", name);
 	}
 
 	public void update(Account account, String... properties) {
@@ -74,7 +74,7 @@ public class AccountService {
 		}
 	}
 
-	public Account loadByAccessKey(String accessKey) {
+	public Account findByAccessKey(String accessKey) {
 		try {
 			AccountAccessKey accountAccessKey = dbUtil.findSingleEquals(AccountAccessKey.class, "hash", accessKey);
 			if (null == accountAccessKey) {

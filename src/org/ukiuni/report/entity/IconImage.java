@@ -4,37 +4,26 @@ import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.persistence.ManyToOne;
+import javax.persistence.Lob;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 @Entity
-public class AccountAccessKey {
+public class IconImage {
 	@Id
 	@GeneratedValue
 	private long id;
-	@ManyToOne
-	private Account account;
-	@Column(unique = true, nullable = false)
-	private String hash;
+	private String key;
+	private Account register;
+	@Lob
+	@Column(columnDefinition = "BLOB NOT NULL")
+	private byte[] content;
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date createdAt;
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date updatedAt;
-	@Enumerated(EnumType.STRING)
-	private Status status;
-
-	public Status getStatus() {
-		return status;
-	}
-
-	public void setStatus(Status status) {
-		this.status = status;
-	}
 
 	public long getId() {
 		return id;
@@ -44,20 +33,28 @@ public class AccountAccessKey {
 		this.id = id;
 	}
 
-	public Account getAccount() {
-		return account;
+	public String getKey() {
+		return key;
 	}
 
-	public void setAccount(Account account) {
-		this.account = account;
+	public void setKey(String key) {
+		this.key = key;
 	}
 
-	public String getHash() {
-		return hash;
+	public Account getRegister() {
+		return register;
 	}
 
-	public void setHash(String hash) {
-		this.hash = hash;
+	public void setRegister(Account register) {
+		this.register = register;
+	}
+
+	public byte[] getContent() {
+		return content;
+	}
+
+	public void setContent(byte[] content) {
+		this.content = content;
 	}
 
 	public Date getCreatedAt() {
@@ -76,7 +73,4 @@ public class AccountAccessKey {
 		this.updatedAt = updatedAt;
 	}
 
-	public static enum Status {
-		CREATED, DELETED;
-	}
 }
