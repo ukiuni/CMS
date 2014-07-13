@@ -16,8 +16,8 @@ public class ImageUtil {
 		double scale = widthScale > heightScale ? widthScale : heightScale;
 		int scaledWidth = (int) (image.getWidth() * scale);
 		int scaledHeight = (int) (image.getHeight() * scale);
-		BufferedImage thumb = new BufferedImage(scaledWidth, scaledHeight, image.getType());
-		thumb.getGraphics().drawImage(image.getScaledInstance(scaledWidth, scaledHeight, Image.SCALE_SMOOTH), 0, 0, scaledWidth, scaledHeight, null);
+		BufferedImage thumb = new BufferedImage(width, height, image.getType());
+		thumb.getGraphics().drawImage(image.getScaledInstance(scaledWidth, scaledHeight, Image.SCALE_SMOOTH), (width - scaledWidth) / 2, (height - scaledHeight) / 2, scaledWidth, scaledHeight, null);
 		ImageIO.write(thumb, "PNG", out);
 	}
 }

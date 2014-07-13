@@ -13,3 +13,57 @@
 	height: 120px;
 	overflow: hidden;
 }
+
+.iconWrap image {
+	width: 120px;
+}
+
+.iconWrapMini {
+	width: 60px;
+	height: 60px;
+	overflow: hidden;
+}
+
+.iconWrapMini img {
+	width: 60px;
+}
+
+.iconWrapMicro {
+	width: 30px;
+	height: 30px;
+	overflow: hidden;
+}
+
+.iconWrapMicro img {
+	width: 30px;
+}
+
+/*report css start*/
+.reportArea h1 {
+	padding: 3px;
+	padding-left: 10px;
+	background-color: #F0F0F0;
+}
+
+.reportArea h2 {
+	border-bottom: 1px #F0F0F0 solid;
+}
+
+.reportArea table {
+	border: 1px #F0F0F0 solid;
+}
+
+.reportArea table th {
+	padding: 6px;
+	text-align: center;
+	vertical-align: center;
+	color: #333333;
+	background-color: #F0F0F0;
+	border: 1px solid #ccc;
+}
+
+.reportArea table td {
+	padding: 6px;
+	border: 1px solid #ccc;
+}
+/*report css end*/

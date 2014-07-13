@@ -8,18 +8,20 @@
 			<a class="navbar-brand" href="#">Project name</a>
 		</div>
 		<div class="navbar-collapse collapse">
-			<ul class="nav navbar-nav navbar-right">
-				<li class="dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown">Dropdown <b class="caret"></b></a>
+			<ul class="nav navbar-nav navbar-right" ng-show="loginAccount">
+				<li class="dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown">Actions <b class="caret"></b></a>
 					<ul class="dropdown-menu">
-						<li><a href="#">Action</a></li>
-						<li><a href="#">Another action</a></li>
-						<li><a href="#">Something else here</a></li>
-						<li class="divider"></li>
-						<li class="dropdown-header">Nav header</li>
-						<li><a href="#">Separated link</a></li>
-						<li><a href="#">One more separated link</a></li>
+						<li><a ng-click="logout()">logout</a></li>
+						<li><a href="#editReport">create new report</a></li>
 					</ul></li>
-				<li><a href="#myPage">myPage</a></li>
+				<li>
+					<div class="iconWrapMicro" style="margin-top: 10px; white-space: nowrap;">
+						<nobr>
+							<a href="#myPage"> <img src="{{loginAccount.iconUrl}}" alt="{{report.reporter.name}}" />{{loginAccount.name}}
+							</a>
+							</nobr>
+					</div>
+				</li>
 			</ul>
 		</div>
 		<!--/.nav-collapse -->

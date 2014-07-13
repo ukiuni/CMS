@@ -4,18 +4,16 @@ import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Version;
 
-import org.ukiuni.report.entity.Report.Status;
-
 @Entity
 public class Account {
+	public static String STATUS_CREATED = "created";
+	public static String STATUS_DELETED = "deleted";
 	@Id
 	@GeneratedValue
 	private long id;
@@ -30,8 +28,7 @@ public class Account {
 	private Date createdAt;
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date updatedAt;
-	@Enumerated(EnumType.STRING)
-	private Status status;
+	private String status;
 	private String iconUrl;
 	@Version
 	private long version;
@@ -84,11 +81,11 @@ public class Account {
 		this.updatedAt = updatedAt;
 	}
 
-	public Status getStatus() {
+	public String getStatus() {
 		return status;
 	}
 
-	public void setStatus(Status status) {
+	public void setStatus(String status) {
 		this.status = status;
 	}
 

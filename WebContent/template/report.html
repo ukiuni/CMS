@@ -1,0 +1,32 @@
+<div ng-controller="reportController" style="margin: 10px">
+	<div class="row">
+		<div class="col-xs-12">
+			<div class="form-group">
+				<div style="font-size: 50px; height: 80px; margin: 0;">{{report.title}}</div>
+			</div>
+		</div>
+	</div>
+	<div class="row" style="margin: 0px;">
+		<div class="col-xs-9">
+			<div class="reportArea" marked="report.content" style="border-radius: 4px"></div>
+		</div>
+		<div class=" col-xs-3" style="padding: 0; border-radius: 4px 0 0 4px">
+			<div class="row">
+				<div class="col-xs-3">
+					<p class="iconWrapMini">
+						<img src="{{report.reporter.iconUrl}}" alt="{{report.reporter.name}}">
+					</p>
+				</div>
+				<div class="col-xs-9">
+					<div>
+						<h4>{{report.reporter.name}}</h4>
+					</div>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-xs-11">{{report.reporter.profile}}</div>
+			</div>
+		</div>
+	</div>
+</div>
+</div>

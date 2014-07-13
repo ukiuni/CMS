@@ -9,7 +9,6 @@ import javax.persistence.NoResultException;
 import org.ukiuni.report.entity.Account;
 import org.ukiuni.report.entity.Report;
 import org.ukiuni.report.entity.Report.ReportPK;
-import org.ukiuni.report.entity.Report.Status;
 import org.ukiuni.report.util.DBUtil;
 import org.ukiuni.report.util.DBUtil.Order.SequenceTo;
 import org.ukiuni.report.util.DBUtil.WhereCondition.Match;
@@ -37,7 +36,7 @@ public class ReportService {
 		Report report = new Report();
 		report.setCreatedAt(new Date());
 		report.setKey(UUID.randomUUID().toString());
-		report.setStatus(Status.DRAFT);
+		report.setStatus(Report.STATUS_DRAFT);
 		report.setAccount(account);
 		ReportPK reportPK = new ReportPK();
 		reportPK.setVersion(1);

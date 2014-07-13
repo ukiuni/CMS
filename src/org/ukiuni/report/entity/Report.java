@@ -6,8 +6,6 @@ import java.util.Date;
 import javax.persistence.Embeddable;
 import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.ManyToOne;
 import javax.persistence.Temporal;
@@ -16,6 +14,10 @@ import javax.persistence.Version;
 
 @Entity
 public class Report {
+	public static String STATUS_PUBLISHED = "published";
+	public static String STATUS_PRIVATE = "private";
+	public static String STATUS_DRAFT = "draft";
+	public static String STATUS_DELETED = "deleted";
 	@EmbeddedId
 	private ReportPK pk;
 	@ManyToOne
@@ -27,8 +29,7 @@ public class Report {
 	private Date createdAt;
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date updatedAt;
-	@Enumerated(EnumType.STRING)
-	private Status status;
+	private String status;
 
 	public ReportPK getPk() {
 		return pk;
@@ -70,11 +71,11 @@ public class Report {
 		this.updatedAt = updatedAt;
 	}
 
-	public Status getStatus() {
+	public String getStatus() {
 		return status;
 	}
 
-	public void setStatus(Status status) {
+	public void setStatus(String status) {
 		this.status = status;
 	}
 
@@ -102,10 +103,6 @@ public class Report {
 	@Override
 	public boolean equals(Object obj) {
 		return (obj instanceof Report && ((Report) obj).getPk().getId() == pk.id);
-	}
-
-	public static enum Status {
-		DRAFT, PUBLISHED, PRIVATE, DELETED
 	}
 
 	@SuppressWarnings("serial")

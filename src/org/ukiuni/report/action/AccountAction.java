@@ -88,6 +88,7 @@ public class AccountAction {
 		Account account = accountService.findByAccessKey(accessKey);
 		AccountDto returnAccount = new AccountDto();
 		BeanUtils.copyProperties(returnAccount, account);
+		returnAccount.setAccessKey(accessKey);
 		return returnAccount;
 	}
 

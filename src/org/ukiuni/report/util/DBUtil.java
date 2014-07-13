@@ -48,34 +48,41 @@ public class DBUtil {
 		return this.factory.createEntityManager();
 	}
 
-	public void persist(Object object) {
-		EntityManager em = createEntityManager();
-		EntityTransaction entityTransaction = em.getTransaction();
-		entityTransaction.begin();
-		em.persist(object);
-		entityTransaction.commit();
+	public Object persist(final Object object) {
+		return execute(new Work<Object>() {
+			public Object execute(EntityManager em) {
+				em.persist(object);
+				return object;
+			}
+		});
 	}
 
-	public <T> T execute(Work<T> query) {
+	public <T> T execute(Work<T> executer) {
 		EntityManager em = createEntityManager();
-		EntityTransaction entityTransaction = em.getTransaction();
-		entityTransaction.begin();
-		T result = query.execute(em);
-		entityTransaction.commit();
-		return result;
+		try {
+			EntityTransaction entityTransaction = em.getTransaction();
+			entityTransaction.begin();
+			T result = executer.execute(em);
+			entityTransaction.commit();
+			return result;
+		} finally {
+			em.close();
+		}
 	}
 
 	public <T> T update(final Object id, final Object obj) {
 		return this.execute(new Work<T>() {
+			@SuppressWarnings("unchecked")
 			@Override
 			public T execute(EntityManager em) {
 				Object target = em.find(obj.getClass(), id);
 				try {
 					BeanUtils.copyProperties(target, obj);
+					em.merge(target);
 				} catch (Exception e) {
 					new RuntimeException(e);
 				}
-				return null;
+				return (T) target;
 			}
 		});
 	}
@@ -86,7 +93,7 @@ public class DBUtil {
 				CriteriaBuilder cb = em.getCriteriaBuilder();
 				CriteriaQuery<T> cq = cb.createQuery(clazz);
 				Root<T> r = cq.from(clazz);
-				prepareWhereCOndition(cb, cq, r, whereConditions);
+				prepareWhereCondition(cb, cq, r, whereConditions);
 				return em.createQuery(cq.select(r)).getSingleResult();
 			}
 
@@ -95,7 +102,7 @@ public class DBUtil {
 	}
 
 	@SuppressWarnings("unchecked")
-	private <T> void prepareWhereCOndition(CriteriaBuilder cb, CriteriaQuery<T> cq, Root<T> r, final WhereCondition... whereConditions) {
+	private <T> void prepareWhereCondition(CriteriaBuilder cb, CriteriaQuery<T> cq, Root<T> r, final WhereCondition... whereConditions) {
 		for (WhereCondition whereCondition : whereConditions) {
 			Predicate predicate;
 			if (whereCondition.match.equals(Match.GE)) {
@@ -125,8 +132,12 @@ public class DBUtil {
 		return findSingle(clazz, new WhereCondition[] { new WhereCondition(key, equalsTarget) });
 	}
 
-	public <T> T find(Class<T> clazz, Object obj) {
-		return createEntityManager().find(clazz, obj);
+	public <T> T find(final Class<T> clazz, final Object obj) {
+		return execute(new Work<T>() {
+			public T execute(EntityManager em) {
+				return em.find(clazz, obj);
+			}
+		});
 	}
 
 	public <T> List<T> findAll(final Class<T> clazz) {
@@ -162,7 +173,7 @@ public class DBUtil {
 				CriteriaQuery<T> cq = cb.createQuery(clazz);
 				Root<T> r = cq.from(clazz);
 				cq.select(r);
-				prepareWhereCOndition(cb, cq, r, whereConditions);
+				prepareWhereCondition(cb, cq, r, whereConditions);
 				prepareOrder(cb, cq, r, orders);
 				return em.createQuery(cq).getResultList();
 			}
