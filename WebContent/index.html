@@ -41,19 +41,14 @@
 			});
 			$routeProvider.when('/', {
 				templateUrl : 'template/top.html',
-				controller : 'topController'
 			}).when('/myPage', {
 				templateUrl : 'template/myPage.html?' + new Date().getTime(),
-				controller : 'myPageController'
 			}).when('/editReport', {
 				templateUrl : 'template/editReport.html?' + new Date().getTime(),
-				controller : 'editReportController'
 			}).when('/report', {
 				templateUrl : 'template/report.html?' + new Date().getTime(),
-				controller : 'reportController'
 			}).when('/editProfile', {
 				templateUrl : 'template/editProfile.html?' + new Date().getTime(),
-				controller : 'editProfileController'
 			}).otherwise({
 				redirectTo : '/'
 			});
@@ -62,6 +57,7 @@
 		myApp.run([ "$rootScope", "$http", "$cookies", "$location", function($rootScope, $http, $cookies, $location) {
 			var accountAccessKey = $cookies.accountAccessKey;
 			$rootScope.logout = function() {
+				$location.path('/');
 				$rootScope.loginAccount = null;
 				var past = new Date();
 				past.setTime(0);
@@ -69,7 +65,6 @@
 				for ( var i in $location.search()) {
 					$location.search(i, null)
 				}
-				$location.path('/');
 			}
 			if (accountAccessKey) {
 				$http.get("api/account/loadByAccessKey", {
@@ -128,13 +123,16 @@
 					$location.search(i, null)
 				}
 				$location.path('/editReport');
+				console.log("createReport")
 			}
 			$scope.editProfile = function() {
 				$location.path('/editProfile');
 			}
 			$scope.showReport = function(reportKey) {
 				console.log("showReport = " + reportKey);
-				$location.search('key', reportKey).path('/editReport');
+				$location.search('key', reportKey)
+				$location.path('/editReport');
+				console.log("showReport")
 			}
 			$scope.showPublishedReport = function(report, $event) {
 				$location.search("key", report.key).path("/report");
@@ -144,12 +142,10 @@
 			}
 		} ]);
 		myApp.controller("reportController", [ "$rootScope", "$scope", "$http", "$location", function($rootScope, $scope, $http, $location) {
-			console.log("report Show = " + $location.search()["key"]);
 			if (!$location.search()["key"]) {
 				return;
 			}
 			$http.get("api/report/load/" + $location.search()["key"]).success(function(report) {
-				console.log("success");
 				$scope.report = report;
 			}).error(function(e) {
 				console.log(e);
@@ -160,6 +156,13 @@
 				$location.path('/');
 				return;
 			}
+			var removeLocationChangeStart = $scope.$on('$locationChangeStart', function(event, next, current) {
+				if (!confirm("Are you sure you want to leave this page?")) {
+					event.preventDefault();
+				} else {
+					removeLocationChangeStart();
+				}
+			});
 			var loadSuccess = function(data) {
 				$scope.report = data;
 				console.log("asdfasdfasdfad = " + $scope.report.status);

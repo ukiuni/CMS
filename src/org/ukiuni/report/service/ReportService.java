@@ -18,7 +18,7 @@ public class ReportService {
 	public DBUtil dbUtil = DBUtil.create("org.ukiuni.report");
 
 	public List<Report> loadByAccount(Account account) {
-		return dbUtil.findList(Report.class, new DBUtil.WhereCondition[] { new DBUtil.WhereCondition("account", account, Match.EQ, Rule.AND) }, new DBUtil.Order("updatedAt", SequenceTo.DESC));
+		return dbUtil.findList(Report.class, new DBUtil.WhereCondition[] { new DBUtil.WhereCondition("account", account, Match.EQ), new DBUtil.WhereCondition("status", Report.STATUS_DELETED, Match.NOT, Rule.AND) }, new DBUtil.Order("updatedAt", SequenceTo.DESC));
 	}
 
 	public Report find(long id, long version) {

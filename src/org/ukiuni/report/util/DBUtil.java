@@ -103,28 +103,36 @@ public class DBUtil {
 
 	@SuppressWarnings("unchecked")
 	private <T> void prepareWhereCondition(CriteriaBuilder cb, CriteriaQuery<T> cq, Root<T> r, final WhereCondition... whereConditions) {
+		Predicate fullPredicate = null;
 		for (WhereCondition whereCondition : whereConditions) {
 			Predicate predicate;
 			if (whereCondition.match.equals(Match.GE)) {
 				predicate = cb.ge(r.get(whereCondition.key).as((Class<? extends Number>) whereCondition.argument.getClass()), (Number) whereCondition.argument);
-			} else if (whereCondition.match.equals(Match.LE)) {
-				predicate = cb.le(r.get(whereCondition.key).as((Class<? extends Number>) whereCondition.argument.getClass()), (Number) whereCondition.argument);
+			} else if (whereCondition.match.equals(Match.GT)) {
+				predicate = cb.gt(r.get(whereCondition.key).as((Class<? extends Number>) whereCondition.argument.getClass()), (Number) whereCondition.argument);
 			} else if (whereCondition.match.equals(Match.LE)) {
 				predicate = cb.le(r.get(whereCondition.key).as((Class<? extends Number>) whereCondition.argument.getClass()), (Number) whereCondition.argument);
 			} else if (whereCondition.match.equals(Match.LT)) {
 				predicate = cb.lt(r.get(whereCondition.key).as((Class<? extends Number>) whereCondition.argument.getClass()), (Number) whereCondition.argument);
 			} else if (whereCondition.match.equals(Match.EQ)) {
 				predicate = cb.equal(r.get(whereCondition.key).as(whereCondition.argument.getClass()), whereCondition.argument);
+			} else if (whereCondition.match.equals(Match.LIKE)) {
+				predicate = cb.like(r.get(whereCondition.key).as((Class<String>) whereCondition.argument.getClass()), (String) whereCondition.argument);
 			} else {
 				predicate = cb.notEqual(r.get(whereCondition.key).as(whereCondition.argument.getClass()), whereCondition.argument);
 			}
-			if (whereCondition.rule.equals(Rule.AND)) {
-				cq.where(cb.and(predicate));
-			} else if (whereCondition.rule.equals(Rule.AND)) {
-				cq.where(cb.or(cb.equal(r.get(whereCondition.key).as(whereCondition.argument.getClass()), whereCondition.argument)));
-			} else if (whereCondition.rule.equals(Rule.NOT)) {
-				cq.where(cb.not(cb.equal(r.get(whereCondition.key).as(whereCondition.argument.getClass()), whereCondition.argument)));
+			if (null == fullPredicate) {
+				fullPredicate = predicate;
+				continue;
 			}
+			if (whereCondition.rule.equals(Rule.AND)) {
+				fullPredicate = cb.and(fullPredicate, predicate);
+			} else if (whereCondition.rule.equals(Rule.OR)) {
+				fullPredicate = cb.or(fullPredicate, predicate);
+			}
+		}
+		if (null != fullPredicate) {
+			cq.where(fullPredicate);
 		}
 	}
 
@@ -227,11 +235,11 @@ public class DBUtil {
 		}
 
 		public enum Match {
-			EQ, NOT, GT, LT, GE, LE
+			EQ, NOT, GT, LT, GE, LE, LIKE
 		}
 
 		public enum Rule {
-			AND, OR, NOT
+			AND, OR
 		}
 	}
 
