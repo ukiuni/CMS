@@ -6,9 +6,11 @@ import java.util.List;
 import javax.validation.constraints.NotNull;
 import javax.ws.rs.BadRequestException;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.ForbiddenException;
 import javax.ws.rs.GET;
 import javax.ws.rs.NotFoundException;
+import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -52,13 +54,13 @@ public class ReportAction {
 	@GET
 	@Path("load/{reportKey}")
 	@Produces(MediaType.APPLICATION_JSON)
-	public ReportDto load(@QueryParam("accessKey") String accessKey, @PathParam("reportKey") String reportKey) throws IllegalAccessException, InvocationTargetException {
+	public ReportDto load(@QueryParam("accountAccessKey") String accessKey, @PathParam("reportKey") String reportKey) throws IllegalAccessException, InvocationTargetException {
 		Report report = reportService.findByKey(reportKey);
+		Account account = accountService.findByAccessKey(accessKey);
 		if (!Report.STATUS_PUBLISHED.equals(report.getStatus())) {
 			if (null == accessKey) {
 				throw new ForbiddenException("this report not accessible");
 			}
-			Account account = accountService.findByAccessKey(accessKey);
 			if (null == account) {
 				throw new NotFoundException("account not found");
 			} else if (report.getAccount().getId() != account.getId()) {
@@ -70,6 +72,12 @@ public class ReportAction {
 		ReporterDto reporterDto = new ReporterDto();
 		BeanUtils.copyProperties(reporterDto, report.getAccount());
 		reportDto.setReporter(reporterDto);
+		long foldedCount = reportService.loadFoldedCount(report);
+		reportDto.setFoldedCount(foldedCount);
+		if (null != account) {
+			boolean hasHold = reportService.hasFold(account, report);
+			reportDto.setFolded(hasHold);
+		}
 		return reportDto;
 	}
 
@@ -88,11 +96,29 @@ public class ReportAction {
 		return reportDto;
 	}
 
-	@PUT
-	@Path("delete")
+	@DELETE
+	@Produces(MediaType.APPLICATION_JSON)
+	public void delete(@QueryParam("key") String reportKey, @QueryParam("accountAccessKey") String accountAccessKey) {
+		Account account = accountService.findByAccessKey(accountAccessKey);
+		if (null == account) {
+			throw new NotFoundException("account not found");
+		}
+		Report report = reportService.findByKey(reportKey);
+		if (null == report) {
+			throw new NotFoundException("report not found");
+		}
+		if (report.getAccount().getId() != account.getId()) {
+			throw new BadRequestException("this report is not yours");
+		}
+		report.setStatus(Report.STATUS_DELETED);
+		reportService.update(report);
+	}
+
+	@POST
+	@Path("fold")
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	public void delete(ReportDtoWithAccesskey reportDto) {
+	public void fold(ReportDtoWithAccesskey reportDto) {
 		Account account = accountService.findByAccessKey(reportDto.getAccountAccessKey());
 		if (null == account) {
 			throw new NotFoundException("account not found");
@@ -104,8 +130,26 @@ public class ReportAction {
 		if (report.getAccount().getId() != account.getId()) {
 			throw new BadRequestException("this report is not yours");
 		}
-		report.setStatus(Report.STATUS_DELETED);
-		reportService.update(report);
+		reportService.fold(account, report);
+	}
+
+	@DELETE
+	@Path("fold")
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	public void unfold(@QueryParam("key") String reportKey, @QueryParam("accountAccessKey") String accountAccessKey) {
+		Account account = accountService.findByAccessKey(accountAccessKey);
+		if (null == account) {
+			throw new NotFoundException("account not found");
+		}
+		Report report = reportService.findByKey(reportKey);
+		if (null == report) {
+			throw new NotFoundException("report not found");
+		}
+		if (report.getAccount().getId() != account.getId()) {
+			throw new BadRequestException("this report is not yours");
+		}
+		reportService.unfold(account, report);
 	}
 
 	public static class ReporterDto {
@@ -174,6 +218,8 @@ public class ReportAction {
 		private String key;
 		private String status;
 		private ReporterDto reporter;
+		private long foldedCount;
+		private boolean folded;
 
 		public ReporterDto getReporter() {
 			return reporter;
@@ -213,6 +259,22 @@ public class ReportAction {
 
 		public void setKey(String key) {
 			this.key = key;
+		}
+
+		public long getFoldedCount() {
+			return foldedCount;
+		}
+
+		public void setFoldedCount(long foldedCount) {
+			this.foldedCount = foldedCount;
+		}
+
+		public boolean isFolded() {
+			return folded;
+		}
+
+		public void setFolded(boolean folded) {
+			this.folded = folded;
 		}
 	}
 }

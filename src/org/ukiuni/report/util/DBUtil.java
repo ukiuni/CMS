@@ -87,22 +87,8 @@ public class DBUtil {
 		});
 	}
 
-	public <T> T findSingle(final Class<T> clazz, final WhereCondition... whereConditions) {
-		Work<T> work = new Work<T>() {
-			public T execute(EntityManager em) {
-				CriteriaBuilder cb = em.getCriteriaBuilder();
-				CriteriaQuery<T> cq = cb.createQuery(clazz);
-				Root<T> r = cq.from(clazz);
-				prepareWhereCondition(cb, cq, r, whereConditions);
-				return em.createQuery(cq.select(r)).getSingleResult();
-			}
-
-		};
-		return execute(work);
-	}
-
 	@SuppressWarnings("unchecked")
-	private <T> void prepareWhereCondition(CriteriaBuilder cb, CriteriaQuery<T> cq, Root<T> r, final WhereCondition... whereConditions) {
+	private <T> Predicate prepareWhereCondition(CriteriaBuilder cb, Root<T> r, final WhereCondition... whereConditions) {
 		Predicate fullPredicate = null;
 		for (WhereCondition whereCondition : whereConditions) {
 			Predicate predicate;
@@ -131,9 +117,7 @@ public class DBUtil {
 				fullPredicate = cb.or(fullPredicate, predicate);
 			}
 		}
-		if (null != fullPredicate) {
-			cq.where(fullPredicate);
-		}
+		return fullPredicate;
 	}
 
 	public <T> T findSingleEquals(final Class<T> clazz, final String key, final Object equalsTarget) {
@@ -164,6 +148,7 @@ public class DBUtil {
 		for (EntityManagerFactory factory : openedFactoryMap.values()) {
 			try {
 				((EntityManagerFactoryImpl) factory).unwrap(ServerSession.class).disconnect();
+				factory.close();
 			} catch (Throwable e) {
 			}
 		}
@@ -174,19 +159,59 @@ public class DBUtil {
 		public T execute(EntityManager em);
 	}
 
+	public <T> T findSingle(final Class<T> clazz, final WhereCondition... whereConditions) {
+		Work<T> work = new Work<T>() {
+			public T execute(EntityManager em) {
+				CriteriaBuilder cb = em.getCriteriaBuilder();
+				CriteriaQuery<T> cq = cb.createQuery(clazz);
+				Root<T> r = cq.from(clazz);
+				Predicate predicate = prepareWhereCondition(cb, r, whereConditions);
+				if (null != predicate) {
+					cq.where(predicate);
+				}
+				return em.createQuery(cq.select(r)).getSingleResult();
+			}
+
+		};
+		return execute(work);
+	}
+
 	public <T> List<T> findList(final Class<T> clazz, final WhereCondition[] whereConditions, final Order... orders) {
 		Work<List<T>> query = new Work<List<T>>() {
 			public List<T> execute(EntityManager em) {
 				CriteriaBuilder cb = em.getCriteriaBuilder();
 				CriteriaQuery<T> cq = cb.createQuery(clazz);
 				Root<T> r = cq.from(clazz);
-				cq.select(r);
-				prepareWhereCondition(cb, cq, r, whereConditions);
+				Predicate predicate = prepareWhereCondition(cb, r, whereConditions);
+				if (null != predicate) {
+					cq.where(predicate);
+				}
 				prepareOrder(cb, cq, r, orders);
-				return em.createQuery(cq).getResultList();
+				return em.createQuery(cq.select(r)).getResultList();
 			}
 		};
 		return execute(query);
+	}
+
+	public <T> long count(final Class<T> clazz, String key, Object value) {
+		return count(clazz, new WhereCondition[] { new WhereCondition(key, value) });
+	}
+
+	public <T> long count(final Class<T> clazz, final WhereCondition[] whereConditions) {
+		Work<Long> work = new Work<Long>() {
+			public Long execute(EntityManager em) {
+				CriteriaBuilder cb = em.getCriteriaBuilder();
+				CriteriaQuery<Long> cq = cb.createQuery(Long.class);
+				Root<T> r = cq.from(clazz);
+				Predicate predicate = prepareWhereCondition(cb, r, whereConditions);
+				if (null != predicate) {
+					cq.where(predicate);
+				}
+				return em.createQuery(cq.select(cb.count(r))).getSingleResult();
+			}
+
+		};
+		return execute(work);
 	}
 
 	private <T> void prepareOrder(CriteriaBuilder cb, CriteriaQuery<T> cq, Root<T> r, final Order... orders) {

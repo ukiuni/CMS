@@ -3,16 +3,20 @@ package org.ukiuni.report.entity;
 import java.io.Serializable;
 import java.util.Date;
 
+import javax.persistence.Column;
 import javax.persistence.Embeddable;
 import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
+import javax.persistence.Index;
 import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Version;
 
 @Entity
+@Table(indexes = { @Index(columnList = "key", unique = true) })
 public class Report {
 	public static String STATUS_PUBLISHED = "published";
 	public static String STATUS_PRIVATE = "private";
@@ -24,6 +28,7 @@ public class Report {
 	private Account account;
 	private String title;
 	private String content;
+	@Column(nullable = false)
 	private String key;
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date createdAt;

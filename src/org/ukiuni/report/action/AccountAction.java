@@ -86,6 +86,9 @@ public class AccountAction {
 	@Path("loadByAccessKey")
 	public AccountDto loadByAccessKey(@QueryParam("accessKey") String accessKey) throws IllegalAccessException, InvocationTargetException {
 		Account account = accountService.findByAccessKey(accessKey);
+		if (account == null) {
+			throw new NotFoundException("account not found");
+		}
 		AccountDto returnAccount = new AccountDto();
 		BeanUtils.copyProperties(returnAccount, account);
 		returnAccount.setAccessKey(accessKey);
@@ -97,15 +100,12 @@ public class AccountAction {
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("update")
 	public AccountDto update(String body) throws IllegalAccessException, InvocationTargetException {
-		System.out.println("update " + body);
 		AccountDto saveAccount = JSON.decode(body, AccountDto.class);
 		Account targetAccount = accountService.findByAccessKey(saveAccount.getAccessKey());
 		if (targetAccount == null) {
 			throw new NotFoundException("account not found");
 		}
 		BeanUtils.copyProperties(targetAccount, saveAccount);
-		System.out.println("save   Account = " + saveAccount);
-		System.out.println("target Account = " + targetAccount);
 		accountService.update(targetAccount);
 		BeanUtils.copyProperties(saveAccount, targetAccount);
 		return saveAccount;

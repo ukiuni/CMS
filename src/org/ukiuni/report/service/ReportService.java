@@ -7,6 +7,7 @@ import java.util.UUID;
 import javax.persistence.NoResultException;
 
 import org.ukiuni.report.entity.Account;
+import org.ukiuni.report.entity.Fold;
 import org.ukiuni.report.entity.Report;
 import org.ukiuni.report.entity.Report.ReportPK;
 import org.ukiuni.report.util.DBUtil;
@@ -57,5 +58,40 @@ public class ReportService {
 	public void delete(Report report) {
 		dbUtil.delete(Report.class, report.getPk());
 
+	}
+
+	public void fold(Account account, Report report) {
+		List<Fold> folds = findFolds(account, report);
+		for (Fold fold : folds) {
+			if (Fold.STATUS_CREATED.equals(fold.getStatus())) {
+				return;
+			}
+		}
+
+		Fold fold = new Fold();
+		fold.setAccount(account);
+		fold.setReportKey(report.getKey());
+		fold.setStatus(Fold.STATUS_CREATED);
+		dbUtil.persist(fold);
+	}
+
+	public void unfold(Account account, Report report) {
+		List<Fold> folds = findFolds(account, report);
+		for (Fold fold : folds) {
+			fold.setStatus(Fold.STATUS_DELETED);
+			dbUtil.update(fold.getId(), fold);
+		}
+	}
+
+	private List<Fold> findFolds(Account account, Report report) {
+		return dbUtil.findList(Fold.class, new DBUtil.WhereCondition[] { new DBUtil.WhereCondition("reportKey", report.getKey()), new DBUtil.WhereCondition("account", account), new DBUtil.WhereCondition("status", Fold.STATUS_CREATED) });
+	}
+
+	public long loadFoldedCount(Report report) {
+		return dbUtil.count(Fold.class, new DBUtil.WhereCondition[] { new DBUtil.WhereCondition("reportKey", report.getKey()), new DBUtil.WhereCondition("status", Fold.STATUS_CREATED) });
+	}
+
+	public boolean hasFold(Account account, Report report) {
+		return !findFolds(account, report).isEmpty();
 	}
 }

@@ -18,6 +18,16 @@
 	width: 120px;
 }
 
+.iconWrapMiddle {
+	width: 80px;
+	height: 80px;
+	overflow: hidden;
+}
+
+.iconWrap image {
+	width: 80px;
+}
+
 .iconWrapMini {
 	width: 60px;
 	height: 60px;

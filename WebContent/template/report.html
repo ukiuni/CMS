@@ -1,8 +1,22 @@
 <div ng-controller="reportController" style="margin: 10px">
 	<div class="row">
-		<div class="col-xs-12">
+		<div class="col-xs-9">
 			<div class="form-group">
-				<div style="font-size: 50px; height: 80px; margin: 0;">{{report.title}}</div>
+				<p class="iconWrapMiddle" style="float: left">
+					<img src="{{report.reporter.iconUrl}}" alt="{{report.reporter.name}}" width="80px">
+				</p>
+				<div style="font-size: 40px; margin: 0; margin-left: 20px; min-height: 80px;">{{report.title}}</div>
+				<br style="clear: both" />
+			</div>
+		</div>
+		<div class="col-xs-3">
+			<div class="low">
+				<div class="col-xs-offset-1 col-xs-10" align="center" style="font-size: 20px; margin-top: 10px">Fold:{{report.foldedCount ? report.foldedCount : 0}}</div>
+			</div>
+			<div class="low">
+				<div class="col-xs-offset-1 col-xs-10">
+					<button class="btn " ng-class="report.folded ? 'btn-default' : 'btn-primary'" style="width: 100%" ng-click="report.folded ? unfold() : fold()">{{report.folded ? "Unfold":"Fold"}}</button>
+				</div>
 			</div>
 		</div>
 	</div>

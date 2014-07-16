@@ -4,19 +4,15 @@
 <meta charset="UTF-8">
 <title>Insert title here</title>
 <script src="api/app/rootURL.js"></script>
-<script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
-<script src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
 <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.19/angular.min.js"></script>
-<script src="https://rawgithub.com/angular-ui/ui-sortable/master/src/sortable.js"></script>
 <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.19/angular-cookies.js"></script>
 
 <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
 <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap-theme.min.css">
-<script src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
 
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/angular-ui-bootstrap/0.10.0/ui-bootstrap-tpls.min.js"></script>
-<script src="http://code.angularjs.org/1.2.19/angular-route.min.js"></script>
-<script src="http://m-e-conroy.github.io/angular-dialog-service/javascripts/dialogs.min.js" type="text/javascript"></script>
+<script src="//code.angularjs.org/1.2.19/angular-route.min.js"></script>
+
 <script type="text/javascript" src="scripts/marked.min.js"></script>
 <script type="text/javascript" src="scripts/angular-marked.min.js"></script>
 <script type="text/javascript" src="scripts/angular-file-upload-shim.min.js"></script>
@@ -29,7 +25,7 @@
 	<div id="header" ng-include="'template/header.html'"></div>
 	<div id="content" ng-view></div>
 	<script type="text/javascript">
-		var myApp = angular.module('myApp', [ 'ui.sortable', 'ui.bootstrap', 'hc.marked', 'ngRoute', 'ngCookies', 'angularFileUpload' ]);
+		var myApp = angular.module('myApp', [ 'ui.bootstrap', 'hc.marked', 'ngRoute', 'ngCookies', 'angularFileUpload' ]);
 		myApp.config([ 'markedProvider', '$routeProvider', '$locationProvider', function(markedProvider, $routeProvider, $locationProvider) {
 			markedProvider.setOptions({
 				gfm : true,
@@ -40,15 +36,18 @@
 				}
 			});
 			$routeProvider.when('/', {
-				templateUrl : 'template/top.html',
+				templateUrl : 'template/top.html'
 			}).when('/myPage', {
-				templateUrl : 'template/myPage.html?' + new Date().getTime(),
+				templateUrl : 'template/myPage.html?' + new Date().getTime()
 			}).when('/editReport', {
-				templateUrl : 'template/editReport.html?' + new Date().getTime(),
+				templateUrl : 'template/editReport.html?' + new Date().getTime()
 			}).when('/report', {
-				templateUrl : 'template/report.html?' + new Date().getTime(),
+				templateUrl : 'template/report.html?' + new Date().getTime()
 			}).when('/editProfile', {
-				templateUrl : 'template/editProfile.html?' + new Date().getTime(),
+				templateUrl : 'template/editProfile.html?' + new Date().getTime()
+			}).when('/logout', {
+				controller : "logoutController",
+				templateUrl : 'template/empty.html'
 			}).otherwise({
 				redirectTo : '/'
 			});
@@ -57,14 +56,17 @@
 		myApp.run([ "$rootScope", "$http", "$cookies", "$location", function($rootScope, $http, $cookies, $location) {
 			var accountAccessKey = $cookies.accountAccessKey;
 			$rootScope.logout = function() {
-				$location.path('/');
-				$rootScope.loginAccount = null;
-				var past = new Date();
-				past.setTime(0);
-				document.cookie = "accountAccessKey=;expires=" + past.toGMTString();
-				for ( var i in $location.search()) {
-					$location.search(i, null)
+				$location.path('/logout');
+			}
+			$rootScope.clone = function(obj) {
+				if (null == obj || "object" != typeof obj)
+					return obj;
+				var copy = obj.constructor();
+				for ( var attr in obj) {
+					if (obj.hasOwnProperty(attr))
+						copy[attr] = obj[attr];
 				}
+				return copy;
 			}
 			if (accountAccessKey) {
 				$http.get("api/account/loadByAccessKey", {
@@ -78,6 +80,17 @@
 				});
 			}
 		} ]);
+		myApp.controller("logoutController", [ "$rootScope", "$location", "$cookies", function($rootScope, $location, $cookies) {
+			$rootScope.loginAccount = null;
+			var past = new Date();
+			past.setTime(0);
+			document.cookie = "accountAccessKey=;expires=" + past.toGMTString();
+			for ( var i in $location.search()) {
+				$location.search(i, null)
+			}
+			$location.path('/');
+		} ]);
+
 		myApp.controller("topController", [ "$rootScope", "$scope", "$http", "$location", "$cookies", function($rootScope, $scope, $http, $location, $cookies) {
 			if ($rootScope.loginAccount) {
 				$location.path('/myPage');
@@ -123,16 +136,13 @@
 					$location.search(i, null)
 				}
 				$location.path('/editReport');
-				console.log("createReport")
 			}
 			$scope.editProfile = function() {
 				$location.path('/editProfile');
 			}
 			$scope.showReport = function(reportKey) {
-				console.log("showReport = " + reportKey);
 				$location.search('key', reportKey)
 				$location.path('/editReport');
-				console.log("showReport")
 			}
 			$scope.showPublishedReport = function(report, $event) {
 				$location.search("key", report.key).path("/report");
@@ -145,19 +155,63 @@
 			if (!$location.search()["key"]) {
 				return;
 			}
-			$http.get("api/report/load/" + $location.search()["key"]).success(function(report) {
+			var reportLoadAccessKey = null;
+			if ($rootScope.loginAccount) {
+				reportLoadAccessKey = $rootScope.loginAccount.accessKey;
+			}
+			$http.get("api/report/load/" + $location.search()["key"], {
+				params : {
+					accountAccessKey : reportLoadAccessKey
+				}
+			}).success(function(report) {
 				$scope.report = report;
 			}).error(function(e) {
-				console.log(e);
+				console.log("error"+e);
 			});
+			var switchFold = function(fold) {
+				if ($scope.folding) {
+					return;
+				}
+				$scope.folding = true;
+				var onSuccessFunction = function() {
+					$scope.report.folded = fold;
+					if (fold) {
+						$scope.report.foldedCount++;
+					} else {
+						$scope.report.foldedCount--;
+					}
+					$scope.folding = false;
+				}
+				var onErrorFunction = function() {
+					$scope.folding = false;
+				}
+				var params = {
+					key : $scope.report.key,
+					accountAccessKey : $rootScope.loginAccount.accessKey
+				}
+				if (fold) {
+					$http.post("api/report/fold", params).success(onSuccessFunction).error(onErrorFunction);
+				} else {
+					$http["delete"]("api/report/fold", {
+						params : params
+					}).success(onSuccessFunction).error(onErrorFunction);
+				}
+			}
+			$scope.fold = function() {
+				switchFold(true);
+			}
+			$scope.unfold = function() {
+				switchFold(false);
+			}
 		} ]);
 		myApp.controller("editReportController", [ "$rootScope", "$scope", "$http", "$location", "$modal", function($rootScope, $scope, $http, $location, $modal) {
 			if (!$rootScope.loginAccount) {
 				$location.path('/');
 				return;
 			}
+			$scope.escapable = false;
 			var removeLocationChangeStart = $scope.$on('$locationChangeStart', function(event, next, current) {
-				if (!confirm("Are you sure you want to leave this page?")) {
+				if (!$scope.escapable && !confirm("Are you sure you want to leave this page?")) {
 					event.preventDefault();
 				} else {
 					removeLocationChangeStart();
@@ -165,7 +219,6 @@
 			});
 			var loadSuccess = function(data) {
 				$scope.report = data;
-				console.log("asdfasdfasdfad = " + $scope.report.status);
 				if ("published" == $scope.report.status) {
 					$scope.action = "publish";
 				} else if ("draft" == $scope.report.status) {
@@ -192,7 +245,7 @@
 				}).success(loadSuccess).error(loadFail);
 			}
 			$scope.doAction = function() {
-				console.log('doAction = ' + $scope.action);
+				$scope.escapable = true;
 				if ("delete" != $scope.action) {
 					$scope.report.accountAccessKey = $rootScope.loginAccount.accessKey;
 					$http.put("api/report", $scope.report).success(function(data) {
@@ -241,15 +294,19 @@
 				$scope.action = action;
 			};
 			$scope.cancel = function() {
+				$scope.escapable = true;
 				for ( var i in $location.search()) {
 					$location.search(i, null)
 				}
 				$location.path('/myPage');
 			};
 			$scope.deleteReport = function(reportKey) {
-				$http.put("api/report/delete", {
-					key : reportKey,
-					accountAccessKey : $rootScope.loginAccount.accessKey
+				$scope.escapable = true;
+				$http["delete"]("api/report", {
+					params : {
+						key : reportKey,
+						accountAccessKey : $rootScope.loginAccount.accessKey
+					}
 				}).success(function() {
 					$location.search("lastAction", "{\"action\":\"deleted\",\"key\":\"" + $scope.report.key + "\"}").path('/myPage');
 				}).error(function() {
@@ -262,7 +319,7 @@
 				$location.path('/');
 				return;
 			}
-			$scope.editingAccount = $.extend(true, {}, $rootScope.loginAccount);
+			$scope.editingAccount = $rootScope.clone($rootScope.loginAccount);
 			$scope.onIconImageSelect = function($file) {
 				(function() {
 					var value = $upload.upload({
@@ -289,7 +346,7 @@
 				var accountAccessKey = $rootScope.loginAccount.accessKey;
 				$scope.editingAccount.accessKey = accountAccessKey;
 				$http.put("api/account/update", $scope.editingAccount).success(function(account) {
-					$.extend(true, $rootScope.loginAccount, account);
+					$rootScope.loginAccount = $rootScope.clone(account);
 					$rootScope.loginAccount.accessKey = accountAccessKey;
 					$location.path('/myPage');
 				}).error(function(e) {

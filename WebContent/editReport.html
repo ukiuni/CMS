@@ -72,7 +72,6 @@
 				content : ""
 			};
 			$scope.doAction = function() {
-				console.log('doAction = ' + $scope.action);
 				$http.post("api/report", $report, function(data) {
 					console.log("completed" + data);
 				}).error(function(e) {
