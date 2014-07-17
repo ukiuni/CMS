@@ -45,6 +45,8 @@
 				templateUrl : 'template/report.html?' + new Date().getTime()
 			}).when('/editProfile', {
 				templateUrl : 'template/editProfile.html?' + new Date().getTime()
+			}).when('/login', {
+				templateUrl : 'template/login.html?' + new Date().getTime()
 			}).when('/logout', {
 				controller : "logoutController",
 				templateUrl : 'template/empty.html'
@@ -91,26 +93,36 @@
 			$location.path('/');
 		} ]);
 
-		myApp.controller("topController", [ "$rootScope", "$scope", "$http", "$location", "$cookies", function($rootScope, $scope, $http, $location, $cookies) {
+		myApp.controller("loginController", [ "$rootScope", "$scope", "$http", "$location", "$cookies", function($rootScope, $scope, $http, $location, $cookies) {
+			$scope.tryLoginAccount = {};
+			$scope.newAccount = {};
 			if ($rootScope.loginAccount) {
 				$location.path('/myPage');
 				return;
 			}
+			var routeToAfterLogin = function() {
+				if ($location.search()["afterLoginPath"]) {
+					$location.path($location.search()["afterLoginPath"]);
+					$location.search("afterLoginPath", null);
+				} else {
+					$location.path('/myPage');
+				}
+			}
 			$scope.createAccount = function() {
 				$http.post("api/account", $scope.newAccount).success(function(data) {
 					$rootScope.loginAccount = data;
-					$location.path('/myPage');
+					routeToAfterLogin();
 				}).error(function(e) {
 					console.log("error" + e);
 				});
 			}
 			$scope.login = function() {
-				$http.post("api/account/login", $scope.loginAccount).success(function(data) {
+				$http.post("api/account/login", $scope.tryLoginAccount).success(function(data) {
 					$rootScope.loginAccount = data;
 					var cookieExpires = new Date();
 					cookieExpires.setTime(cookieExpires.getTime() + 30 * 24 * 60 * 60 * 1000);
 					document.cookie = "accountAccessKey=" + $rootScope.loginAccount.accessKey + ";expires=" + cookieExpires.toGMTString() + ";";
-					$location.path('/myPage');
+					routeToAfterLogin();
 				}).error(function(e) {
 					console.log("error" + e);
 				});
@@ -166,9 +178,15 @@
 			}).success(function(report) {
 				$scope.report = report;
 			}).error(function(e) {
-				console.log("error"+e);
+				console.log("error" + e);
 			});
 			var switchFold = function(fold) {
+				if (!$rootScope.loginAccount) {
+					console.log("location.path = " + $location.path());
+					$location.search('afterLoginPath', $location.path())
+					$location.path('/login');
+					return;
+				}
 				if ($scope.folding) {
 					return;
 				}
@@ -206,7 +224,7 @@
 		} ]);
 		myApp.controller("editReportController", [ "$rootScope", "$scope", "$http", "$location", "$modal", function($rootScope, $scope, $http, $location, $modal) {
 			if (!$rootScope.loginAccount) {
-				$location.path('/');
+				$location.path('/login');
 				return;
 			}
 			$scope.escapable = false;

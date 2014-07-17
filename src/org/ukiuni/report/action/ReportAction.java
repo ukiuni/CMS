@@ -56,7 +56,11 @@ public class ReportAction {
 	@Produces(MediaType.APPLICATION_JSON)
 	public ReportDto load(@QueryParam("accountAccessKey") String accessKey, @PathParam("reportKey") String reportKey) throws IllegalAccessException, InvocationTargetException {
 		Report report = reportService.findByKey(reportKey);
-		Account account = accountService.findByAccessKey(accessKey);
+
+		Account account = null;
+		if (null != accessKey) {
+			account = accountService.findByAccessKey(accessKey);
+		}
 		if (!Report.STATUS_PUBLISHED.equals(report.getStatus())) {
 			if (null == accessKey) {
 				throw new ForbiddenException("this report not accessible");

@@ -49,6 +49,6 @@ public class ShowIndexHTMLServlet implements Filter {
 		if ("/".equals(contextPath)) {
 			contextPath = "";
 		}
-		PUSH_STATE_LIST.addAll(Arrays.asList(contextPath + "/myPage", contextPath + "/editReport", contextPath + "/editProfile", contextPath + "/report"));
+		PUSH_STATE_LIST.addAll(Arrays.asList(contextPath + "/myPage", contextPath + "/editReport", contextPath + "/editProfile", contextPath + "/report", contextPath + "/login"));
 	}
 }
