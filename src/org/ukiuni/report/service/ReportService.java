@@ -7,6 +7,7 @@ import java.util.UUID;
 import javax.persistence.NoResultException;
 
 import org.ukiuni.report.entity.Account;
+import org.ukiuni.report.entity.Comment;
 import org.ukiuni.report.entity.Fold;
 import org.ukiuni.report.entity.Report;
 import org.ukiuni.report.entity.Report.ReportPK;
@@ -93,5 +94,29 @@ public class ReportService {
 
 	public boolean hasFold(Account account, Report report) {
 		return !findFolds(account, report).isEmpty();
+	}
+
+	public Comment comment(Account account, Report report, String message) {
+		Comment comment = new Comment();
+		comment.setAccount(account);
+		comment.setReportKey(report.getKey());
+		comment.setStatus(Comment.STATUS_CREATED);
+		comment.setCreatedAt(new Date());
+		comment.setMessage(message);
+		dbUtil.persist(comment);
+		return comment;
+
+	}
+
+	public List<Comment> loadComments(String reportKey) {
+		return dbUtil.findList(Comment.class, new DBUtil.WhereCondition[] { new DBUtil.WhereCondition("reportKey", reportKey), new DBUtil.WhereCondition("status", Comment.STATUS_DELETED, DBUtil.WhereCondition.Match.NOT) }, new DBUtil.Order("createdAt", DBUtil.Order.SequenceTo.ASC));
+	}
+
+	public Comment findCommentByKey(long commentId) {
+		return dbUtil.find(Comment.class, commentId);
+	}
+
+	public void updateComment(Comment comment) {
+		dbUtil.update(comment.getId(), comment);
 	}
 }

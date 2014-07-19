@@ -4,7 +4,7 @@
 			<div class="row">
 				<div class="col-xs-3">
 					<p class="iconWrapMini">
-						<img src="{{loginAccount.iconUrl}}" alt="{{loginAccount.name}}">
+						<img ng-src="{{loginAccount.iconUrl}}" alt="{{loginAccount.name}}">
 					</p>
 				</div>
 				<div class="col-xs-9">
@@ -28,7 +28,7 @@
 					<button type="button" class="btn btn-primary" ng-click="createReport()">Create New Report</button>
 				</div>
 			</div>
-			<div class="row reportListRow" ng-click="showReport(report.key)" ng-repeat="report in reports" style="border-bottom: solid 1px #CCC">
+			<div class="row clickable" ng-click="showReport(report.key)" ng-repeat="report in reports" style="border-bottom: solid 1px #CCC">
 				<div class="col-xs-8">
 					<h4>{{report.title}}</h4>
 				</div>

@@ -1,6 +1,8 @@
 package org.ukiuni.report.action;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import javax.validation.constraints.NotNull;
@@ -19,7 +21,9 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
 import org.apache.commons.beanutils.BeanUtils;
+import org.ukiuni.report.action.AccountAction.CommenterDto;
 import org.ukiuni.report.entity.Account;
+import org.ukiuni.report.entity.Comment;
 import org.ukiuni.report.entity.Report;
 import org.ukiuni.report.service.AccountService;
 import org.ukiuni.report.service.ReportService;
@@ -56,21 +60,7 @@ public class ReportAction {
 	@Produces(MediaType.APPLICATION_JSON)
 	public ReportDto load(@QueryParam("accountAccessKey") String accessKey, @PathParam("reportKey") String reportKey) throws IllegalAccessException, InvocationTargetException {
 		Report report = reportService.findByKey(reportKey);
-
-		Account account = null;
-		if (null != accessKey) {
-			account = accountService.findByAccessKey(accessKey);
-		}
-		if (!Report.STATUS_PUBLISHED.equals(report.getStatus())) {
-			if (null == accessKey) {
-				throw new ForbiddenException("this report not accessible");
-			}
-			if (null == account) {
-				throw new NotFoundException("account not found");
-			} else if (report.getAccount().getId() != account.getId()) {
-				throw new ForbiddenException("this report not accessible");
-			}
-		}
+		Account account = checkAccessible(accessKey, report);
 		ReportDto reportDto = new ReportDto();
 		BeanUtils.copyProperties(reportDto, report);
 		ReporterDto reporterDto = new ReporterDto();
@@ -83,6 +73,114 @@ public class ReportAction {
 			reportDto.setFolded(hasHold);
 		}
 		return reportDto;
+	}
+
+	private Account checkAccessible(String accessKey, Report report) {
+		Account account = null;
+		if (null != accessKey) {
+			account = accountService.findByAccessKey(accessKey);
+		}
+		if (!Report.STATUS_PUBLISHED.equals(report.getStatus())) {
+			System.out.println("account key = " + accessKey);
+			if (null == accessKey) {
+				throw new ForbiddenException("this report not accessible");
+			}
+			if (null == account) {
+				throw new NotFoundException("account not found");
+			} else if (report.getAccount().getId() != account.getId()) {
+				System.out.println("id compare = " + report.getAccount().getId() + ":" + account.getId());
+				throw new ForbiddenException("this report not accessible");
+			}
+		}
+		return account;
+	}
+
+	@POST
+	@Path("comment")
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	public List<CommentDto> comment(CommentDto commentDto) throws IllegalAccessException, InvocationTargetException {
+		Report report = reportService.findByKey(commentDto.getReportKey());
+		if (null == report) {
+			throw new NotFoundException("report not found");
+		}
+		Account account = accountService.findByAccessKey(commentDto.getAccountAccessKey());
+		if (null == account) {
+			throw new NotFoundException("account not found");
+		}
+		reportService.comment(account, report, commentDto.getMessage());
+		List<Comment> comments = reportService.loadComments(report.getKey());
+		return toDto(comments);
+	}
+
+	@GET
+	@Path("{reportKey}/comment")
+	@Produces(MediaType.APPLICATION_JSON)
+	public List<CommentDto> loadComments(@QueryParam("accountAccessKey") String accessKey, @PathParam("reportKey") String reportKey) throws IllegalAccessException, InvocationTargetException {
+		Report report = reportService.findByKey(reportKey);
+		if (null == report) {
+			throw new NotFoundException("report not found");
+		}
+		checkAccessible(accessKey, report);
+		List<Comment> comments = reportService.loadComments(report.getKey());
+		return toDto(comments);
+	}
+
+	@DELETE
+	@Path("{reportKey}/comment")
+	@Produces(MediaType.APPLICATION_JSON)
+	public List<CommentDto> deleteComments(@QueryParam("accountAccessKey") String accessKey, @QueryParam("commentId") long commentId) throws IllegalAccessException, InvocationTargetException {
+		String status = Comment.STATUS_DELETED;
+		String message = null;
+		return checkAndUpdateComment(accessKey, commentId, status, message);
+	}
+
+	@PUT
+	@Path("{reportKey}/comment")
+	@Produces(MediaType.APPLICATION_JSON)
+	public List<CommentDto> updateComments(CommentDto commentDto) throws IllegalAccessException, InvocationTargetException {
+		String status = Comment.STATUS_CREATED;
+		String message = commentDto.getMessage();
+		long commentId = commentDto.getId();
+		String accessKey = commentDto.getAccountAccessKey();
+		return checkAndUpdateComment(accessKey, commentId, status, message);
+
+	}
+
+	private List<CommentDto> checkAndUpdateComment(String accessKey, long commentId, String status, String message) throws IllegalAccessException, InvocationTargetException {
+		Comment comment = reportService.findCommentByKey(commentId);
+		if (null == comment) {
+			throw new NotFoundException("comment not found");
+		}
+		Account account = null;
+		if (null == accessKey || null == (account = accountService.findByAccessKey(accessKey))) {
+			throw new NotFoundException("account not found");
+		}
+		if (account.getId() != comment.getAccount().getId()) {
+			throw new ForbiddenException("comment not accessible");
+		}
+		if (null != status) {
+			comment.setStatus(status);
+		}
+		if (null != message) {
+			comment.setMessage(message);
+		}
+		reportService.updateComment(comment);
+		List<Comment> comments = reportService.loadComments(comment.getReportKey());
+		return toDto(comments);
+	}
+
+	private List<CommentDto> toDto(List<Comment> comments) throws IllegalAccessException, InvocationTargetException {
+		List<CommentDto> commentDtos = new ArrayList<CommentDto>();
+		for (Comment comment : comments) {
+			CommentDto commentDto = new CommentDto();
+			BeanUtils.copyProperties(commentDto, comment);
+			CommenterDto accountDto = new CommenterDto();
+			BeanUtils.copyProperties(accountDto, comment.getAccount());
+			commentDto.setCommenter(accountDto);
+			commentDtos.add(commentDto);
+		}
+		return commentDtos;
 	}
 
 	@PUT
@@ -279,6 +377,68 @@ public class ReportAction {
 
 		public void setFolded(boolean folded) {
 			this.folded = folded;
+		}
+	}
+
+	public static class CommentDto {
+		private long id;
+		private String accountAccessKey;
+		private String reportKey;
+		private String message;
+		private Date createdAt;
+		private CommenterDto commenter;
+
+		public long getId() {
+			return id;
+		}
+
+		public void setId(long id) {
+			this.id = id;
+		}
+
+		public String getAccountAccessKey() {
+			return accountAccessKey;
+		}
+
+		public void setAccountAccessKey(String accountAccessKey) {
+			this.accountAccessKey = accountAccessKey;
+		}
+
+		public String getReportKey() {
+			return reportKey;
+		}
+
+		public void setReportKey(String reportKey) {
+			this.reportKey = reportKey;
+		}
+
+		public String getMessage() {
+			return message;
+		}
+
+		public void setMessage(String message) {
+			this.message = message;
+		}
+
+		@Override
+		public String toString() {
+			return "CommentDto [accountAccessKey=" + accountAccessKey + ", reportKey=" + reportKey + ", message=" + message + "]";
+		}
+
+		public CommenterDto getCommenter() {
+			return commenter;
+		}
+
+		public void setCommenter(CommenterDto commenter) {
+			this.commenter = commenter;
+		}
+
+		public Date getCreatedAt() {
+			return createdAt;
+		}
+
+		public void setCreatedAt(Date createdAt) {
+			this.createdAt = createdAt;
 		}
 	}
 }

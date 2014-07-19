@@ -24,6 +24,7 @@
 <body>
 	<div id="header" ng-include="'template/header.html'"></div>
 	<div id="content" ng-view></div>
+	<div id="header" ng-include="'template/footer.html'"></div>
 	<script type="text/javascript">
 		var myApp = angular.module('myApp', [ 'ui.bootstrap', 'hc.marked', 'ngRoute', 'ngCookies', 'angularFileUpload' ]);
 		myApp.config([ 'markedProvider', '$routeProvider', '$locationProvider', function(markedProvider, $routeProvider, $locationProvider) {
@@ -163,7 +164,7 @@
 				}
 			}
 		} ]);
-		myApp.controller("reportController", [ "$rootScope", "$scope", "$http", "$location", function($rootScope, $scope, $http, $location) {
+		myApp.controller("reportController", [ "$rootScope", "$scope", "$http", "$location", "$modal", function($rootScope, $scope, $http, $location, $modal) {
 			if (!$location.search()["key"]) {
 				return;
 			}
@@ -177,12 +178,20 @@
 				}
 			}).success(function(report) {
 				$scope.report = report;
+				$http.get("api/report/" + report.key + "/comment", {
+					params : {
+						accountAccessKey : reportLoadAccessKey
+					}
+				}).success(function(comments) {
+					$scope.comments = comments;
+				}).error(function(e) {
+					console.log("error " + e)
+				});
 			}).error(function(e) {
 				console.log("error" + e);
 			});
 			var switchFold = function(fold) {
 				if (!$rootScope.loginAccount) {
-					console.log("location.path = " + $location.path());
 					$location.search('afterLoginPath', $location.path())
 					$location.path('/login');
 					return;
@@ -221,6 +230,91 @@
 			$scope.unfold = function() {
 				switchFold(false);
 			}
+			$scope.createAccountForComment = function() {
+				$location.search('afterLoginPath', $location.path())
+				$location.path('/login');
+			}
+			$scope.comment = function() {
+				$http.post("api/report/comment", {
+					accountAccessKey : $rootScope.loginAccount.accessKey,
+					reportKey : $scope.report.key,
+					message : $scope.inputMessage
+				}).success(function(comments) {
+					$scope.inputMessage = "";
+					$scope.comments = comments;
+				}).error(function(e) {
+					console.log(e)
+				});
+			}
+			$scope.deleteComment = function(comment) {
+				$http["delete"]("api/report/" + $scope.report.key + "/comment", {
+					params : {
+						accountAccessKey : $rootScope.loginAccount.accessKey,
+						commentId : comment.id
+					}
+				}).success(function(comments) {
+					$scope.comments = comments
+				}).error(function(e) {
+					console.log(e)
+				});
+			}
+			$scope.updateComment = function(comment) {
+				$http.put("api/report/" + $scope.report.key + "/comment", {
+					accountAccessKey : $rootScope.loginAccount.accessKey,
+					id : comment.id,
+					message : comment.message
+				}).success(function(comments) {
+					$scope.comments = comments
+				}).error(function(e) {
+					console.log(e)
+				});
+			}
+			$scope.openDeleteCommentDialog = function(comment) {
+				var ModalInstanceCtrl = [ "$scope", "$modalInstance", "comment", function($scope, $modalInstance, comment) {
+					$scope.title = "delete comment?";
+					$scope.body = "Are you sure to delete comment? \n \"" + comment.message + "\"";
+					$scope.execute = function() {
+						$modalInstance.close(comment);
+					};
+				} ];
+				var modalInstance = $modal.open({
+					templateUrl : 'template/confirmDialog.html?' + new Date().getTime(),
+					controller : ModalInstanceCtrl,
+					resolve : {
+						comment : function() {
+							return comment;
+						}
+					}
+				});
+				modalInstance.result.then(function(comment) {
+					$scope.deleteComment(comment);
+				}, function() {
+					console.log('Modal dismissed at: ' + new Date());
+				});
+			}
+			$scope.openEditCommentDialog = function(comment) {
+				var ModalInstanceCtrl = [ "$scope", "$modalInstance", "comment", function($scope, $modalInstance, comment) {
+					$scope.comment = comment;
+					$scope.execute = function(comment) {
+						$modalInstance.close(comment);
+					};
+				} ];
+				var modalInstance = $modal.open({
+					templateUrl : 'template/editCommentDialog.html?' + new Date().getTime(),
+					controller : ModalInstanceCtrl,
+					resolve : {
+						comment : function() {
+							return $rootScope.clone(comment);
+						}
+					}
+				});
+				modalInstance.result.then(function(comment) {
+					$scope.updateComment(comment);
+				}, function() {
+					console.log('Modal dismissed at: ' + new Date());
+				});
+
+			}
 		} ]);
 		myApp.controller("editReportController", [ "$rootScope", "$scope", "$http", "$location", "$modal", function($rootScope, $scope, $http, $location, $modal) {
 			if (!$rootScope.loginAccount) {
@@ -252,7 +346,7 @@
 			if ($location.search()["key"]) {
 				$http.get("api/report/load/" + $location.search()["key"], {
 					params : {
-						accessKey : $scope.loginAccount.accessKey,
+						accountAccessKey : $scope.loginAccount.accessKey,
 					}
 				}).success(loadSuccess).error(loadFail);
 			} else {
@@ -275,7 +369,7 @@
 					var ModalInstanceCtrl = [ "$scope", "$modalInstance", "title", "body", "report", function($scope, $modalInstance, title, body, report) {
 						$scope.title = title;
 						$scope.body = body;
-						$scope.deleteReport = function() {
+						$scope.execute = function() {
 							$modalInstance.close(report.key);
 						};
 					} ];
@@ -373,6 +467,5 @@
 			}
 		} ]);
 	</script>
-	<div id="header" ng-include="'template/footer.html'"></div>
 </body>
 </html>

@@ -146,6 +146,7 @@ public class AccountAction {
 
 	@SuppressWarnings("serial")
 	public static class AccountDto implements Serializable {
+		private long id;
 		@Size(min = 6, max = 20, message = "An event's name must contain between 6 and 1000 characters")
 		// TODO JSONだとvalidationが効かない
 		private String name;
@@ -157,6 +158,14 @@ public class AccountAction {
 		private String profile;
 		private String iconUrl;
 		private String accessKey;
+
+		public long getId() {
+			return id;
+		}
+
+		public void setId(long id) {
+			this.id = id;
+		}
 
 		public String getName() {
 			return name;
@@ -209,6 +218,37 @@ public class AccountAction {
 
 		public void setAccessKey(String accessKey) {
 			this.accessKey = accessKey;
+		}
+	}
+
+	@SuppressWarnings("serial")
+	public static class CommenterDto implements Serializable {
+		private long id;
+		private String name;
+		private String iconUrl;
+
+		public long getId() {
+			return id;
+		}
+
+		public void setId(long id) {
+			this.id = id;
+		}
+
+		public String getName() {
+			return name;
+		}
+
+		public void setName(String name) {
+			this.name = name;
+		}
+
+		public String getIconUrl() {
+			return iconUrl;
+		}
+
+		public void setIconUrl(String iconUrl) {
+			this.iconUrl = iconUrl;
 		}
 	}
 }
