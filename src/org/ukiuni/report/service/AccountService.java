@@ -1,11 +1,13 @@
 package org.ukiuni.report.service;
 
+import java.security.MessageDigest;
 import java.util.Date;
 import java.util.UUID;
 
 import javax.persistence.NoResultException;
 
-import org.apache.commons.beanutils.BeanUtils;
+import net.arnx.jsonic.util.Base64;
+
 import org.ukiuni.report.entity.Account;
 import org.ukiuni.report.entity.AccountAccessKey;
 import org.ukiuni.report.util.DBUtil;
@@ -13,8 +15,18 @@ import org.ukiuni.report.util.DBUtil;
 public class AccountService {
 	public DBUtil dbUtil = DBUtil.create("org.ukiuni.report");
 
-	public void save(Account account) {
+	public Account create(String name, String mail, String password) {
+		Account account = new Account();
+		account.setName(name);
+		account.setMail(mail);
+		try {
+			account.setPasswordHashed(Base64.encode(MessageDigest.getInstance("SHA1").digest(password.getBytes("UTF-8"))));
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+		account.setCreatedAt(new Date());
 		dbUtil.persist(account);
+		return account;
 	}
 
 	public void update(Account account) {
@@ -29,21 +41,6 @@ public class AccountService {
 		accountAccessKey.setStatus(org.ukiuni.report.entity.AccountAccessKey.Status.CREATED);
 		dbUtil.persist(accountAccessKey);
 		return accountAccessKey;
-	}
-
-	public void update(Account account, String... properties) {
-		Account registedAccount = dbUtil.find(Account.class, account.getId());
-		try {
-			if (properties == null || 0 == properties.length) {
-				BeanUtils.copyProperty(account, "mail", registedAccount);
-			} else {
-				for (String property : properties) {
-					BeanUtils.copyProperty(account, property, registedAccount);
-				}
-			}
-		} catch (Exception e) {
-			throw new RuntimeException(e);
-		}
 	}
 
 	@SuppressWarnings("serial")

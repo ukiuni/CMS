@@ -1,5 +1,6 @@
 package org.ukiuni.report.util;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -20,6 +21,7 @@ import org.ukiuni.report.util.DBUtil.WhereCondition.Match;
 import org.ukiuni.report.util.DBUtil.WhereCondition.Rule;
 
 public class DBUtil {
+	public static String SYSTEM_ENV_FACTORYNAME_POSTFIX = "org.ukiuni.db.factoryName.postfix";
 	private static Map<String, EntityManagerFactory> openedFactoryMap = new HashMap<String, EntityManagerFactory>();
 	private EntityManagerFactory factory;
 
@@ -33,7 +35,8 @@ public class DBUtil {
 		if (!openedFactoryMap.containsKey(factoryName)) {
 			synchronized (DBUtil.class) {
 				if (!openedFactoryMap.containsKey(factoryName)) {
-					EntityManagerFactory factory = Persistence.createEntityManagerFactory(factoryName);
+					String postfix = System.getProperty(SYSTEM_ENV_FACTORYNAME_POSTFIX, "");
+					EntityManagerFactory factory = createEntityManagerFactory(factoryName + postfix);
 					if (null == factory) {
 						throw new IllegalArgumentException("factoryName [\"" + factoryName + "\"] cant be created.");
 					}
@@ -42,6 +45,11 @@ public class DBUtil {
 			}
 		}
 		this.factory = openedFactoryMap.get(factoryName);
+	}
+
+	protected EntityManagerFactory createEntityManagerFactory(String factoryName) {
+		EntityManagerFactory factory = Persistence.createEntityManagerFactory(factoryName);
+		return factory;
 	}
 
 	private EntityManager createEntityManager() {
@@ -152,7 +160,13 @@ public class DBUtil {
 			} catch (Throwable e) {
 			}
 		}
-
+		List<String> removeKeyList = new ArrayList<String>();
+		for (String key : openedFactoryMap.keySet()) {
+			removeKeyList.add(key);
+		}
+		for (Object key : removeKeyList) {
+			openedFactoryMap.remove(key);
+		}
 	}
 
 	public static interface Work<T> {

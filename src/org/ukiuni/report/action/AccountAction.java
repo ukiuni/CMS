@@ -8,6 +8,7 @@ import java.io.UnsupportedEncodingException;
 import java.lang.reflect.InvocationTargetException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.List;
 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
@@ -39,12 +40,19 @@ import org.ukiuni.report.entity.AccountAccessKey;
 import org.ukiuni.report.entity.IconImage;
 import org.ukiuni.report.service.AccountService;
 import org.ukiuni.report.service.IconImageService;
+import org.ukiuni.report.util.DBUtil;
 
 @Path("account")
 public class AccountAction {
 	private static final long IMAGE_ICON_SOURCE_MAX_SIZE = 10000000;
 	public AccountService accountService = new AccountService();
 	public IconImageService iconImageService = new IconImageService();
+
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	public List<Account> loadAcc() {
+		return DBUtil.create("org.ukiuni.report").findAll(Account.class);
+	}
 
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
@@ -56,13 +64,12 @@ public class AccountAction {
 		if (accountService.existsMail(saveAccount.getMail())) {
 			throw new ResponseServerStatusException(409, "email");
 		}
-		Account account = new Account();
-		BeanUtils.copyProperties(account, saveAccount);
-		account.setPasswordHashed(Base64.encode(MessageDigest.getInstance("SHA1").digest(saveAccount.getPassword().getBytes("UTF-8"))));
-		accountService.save(account);
+		Account account = accountService.create(saveAccount.getName(), saveAccount.getMail(), saveAccount.getPassword());
 
+		AccountAccessKey accountAccessKey = accountService.generateAccessKey(account);
 		AccountDto returnAccount = new AccountDto();
 		BeanUtils.copyProperties(returnAccount, account);
+		returnAccount.setAccessKey(accountAccessKey.getHash());
 		return returnAccount;
 	}
 
