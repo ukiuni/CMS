@@ -4,8 +4,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
-import javax.persistence.NoResultException;
-
 import org.ukiuni.report.entity.Account;
 import org.ukiuni.report.entity.Comment;
 import org.ukiuni.report.entity.Fold;
@@ -19,19 +17,8 @@ import org.ukiuni.report.util.DBUtil.WhereCondition.Rule;
 public class ReportService {
 	public DBUtil dbUtil = DBUtil.create("org.ukiuni.report");
 
-	public List<Report> loadByAccount(Account account) {
+	public List<Report> findByAccount(Account account) {
 		return dbUtil.findList(Report.class, new DBUtil.WhereCondition[] { new DBUtil.WhereCondition("account", account, Match.EQ), new DBUtil.WhereCondition("status", Report.STATUS_DELETED, Match.NOT, Rule.AND) }, new DBUtil.Order("updatedAt", SequenceTo.DESC));
-	}
-
-	public Report find(long id, long version) {
-		ReportPK reportPK = new ReportPK();
-		reportPK.setId(id);
-		reportPK.setVersion(version);
-		try {
-			return dbUtil.find(Report.class, reportPK);
-		} catch (NoResultException e) {
-			return null;
-		}
 	}
 
 	public Report create(Account account) {
@@ -45,6 +32,13 @@ public class ReportService {
 		report.setPk(reportPK);
 		dbUtil.persist(report);
 		return report;
+	}
+
+	public Report find(long id, long version) {
+		ReportPK reportPK = new ReportPK();
+		reportPK.setId(id);
+		reportPK.setVersion(version);
+		return dbUtil.find(Report.class, reportPK);
 	}
 
 	public Report findByKey(String key) {
@@ -88,7 +82,11 @@ public class ReportService {
 		return dbUtil.findList(Fold.class, new DBUtil.WhereCondition[] { new DBUtil.WhereCondition("reportKey", report.getKey()), new DBUtil.WhereCondition("account", account), new DBUtil.WhereCondition("status", Fold.STATUS_CREATED) });
 	}
 
-	public long loadFoldedCount(Report report) {
+	public List<Fold> findFolds(String reportKey) {
+		return dbUtil.findList(Fold.class, new DBUtil.WhereCondition[] { new DBUtil.WhereCondition("reportKey", reportKey), new DBUtil.WhereCondition("status", Fold.STATUS_CREATED) }, new DBUtil.Order("createdAt", DBUtil.Order.SequenceTo.DESC));
+	}
+
+	public long countFolded(Report report) {
 		return dbUtil.count(Fold.class, new DBUtil.WhereCondition[] { new DBUtil.WhereCondition("reportKey", report.getKey()), new DBUtil.WhereCondition("status", Fold.STATUS_CREATED) });
 	}
 
@@ -108,7 +106,7 @@ public class ReportService {
 
 	}
 
-	public List<Comment> loadComments(String reportKey) {
+	public List<Comment> findComments(String reportKey) {
 		return dbUtil.findList(Comment.class, new DBUtil.WhereCondition[] { new DBUtil.WhereCondition("reportKey", reportKey), new DBUtil.WhereCondition("status", Comment.STATUS_DELETED, DBUtil.WhereCondition.Match.NOT) }, new DBUtil.Order("createdAt", DBUtil.Order.SequenceTo.ASC));
 	}
 
@@ -117,6 +115,12 @@ public class ReportService {
 	}
 
 	public void updateComment(Comment comment) {
+		comment.setUpdatedAt(new Date());
 		dbUtil.update(comment.getId(), comment);
+	}
+
+	public void deleteComment(Comment comment) {
+		comment.setStatus(Comment.STATUS_DELETED);
+		updateComment(comment);
 	}
 }

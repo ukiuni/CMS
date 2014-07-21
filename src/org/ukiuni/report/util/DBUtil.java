@@ -8,6 +8,8 @@ import java.util.Map;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
+import javax.persistence.LockModeType;
+import javax.persistence.NoResultException;
 import javax.persistence.Persistence;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -129,15 +131,23 @@ public class DBUtil {
 	}
 
 	public <T> T findSingleEquals(final Class<T> clazz, final String key, final Object equalsTarget) {
-		return findSingle(clazz, new WhereCondition[] { new WhereCondition(key, equalsTarget) });
+		try {
+			return findSingle(clazz, new WhereCondition[] { new WhereCondition(key, equalsTarget) });
+		} catch (NoResultException e) {
+			return null;
+		}
 	}
 
 	public <T> T find(final Class<T> clazz, final Object obj) {
-		return execute(new Work<T>() {
-			public T execute(EntityManager em) {
-				return em.find(clazz, obj);
-			}
-		});
+		try {
+			return execute(new Work<T>() {
+				public T execute(EntityManager em) {
+					return em.find(clazz, obj);
+				}
+			});
+		} catch (NoResultException e) {
+			return null;
+		}
 	}
 
 	public <T> List<T> findAll(final Class<T> clazz) {
@@ -146,7 +156,7 @@ public class DBUtil {
 				CriteriaBuilder cb = em.getCriteriaBuilder();
 				CriteriaQuery<T> cq = cb.createQuery(clazz);
 				Root<T> r = cq.from(clazz);
-				return em.createQuery(cq.select(r)).getResultList();
+				return em.createQuery(cq.select(r)).setLockMode(LockModeType.OPTIMISTIC).getResultList();
 			}
 		};
 		return execute(work);
@@ -183,7 +193,8 @@ public class DBUtil {
 				if (null != predicate) {
 					cq.where(predicate);
 				}
-				return em.createQuery(cq.select(r)).getSingleResult();
+
+				return em.createQuery(cq.select(r)).setLockMode(LockModeType.OPTIMISTIC).getSingleResult();
 			}
 
 		};
@@ -201,7 +212,7 @@ public class DBUtil {
 					cq.where(predicate);
 				}
 				prepareOrder(cb, cq, r, orders);
-				return em.createQuery(cq.select(r)).getResultList();
+				return em.createQuery(cq.select(r)).setLockMode(LockModeType.OPTIMISTIC).getResultList();
 			}
 		};
 		return execute(query);

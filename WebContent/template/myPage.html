@@ -28,7 +28,7 @@
 					<button type="button" class="btn btn-primary" ng-click="createReport()">Create New Report</button>
 				</div>
 			</div>
-			<div class="row clickable" ng-click="showReport(report.key)" ng-repeat="report in reports" style="border-bottom: solid 1px #CCC">
+			<div class="row clickable reportRow" ng-click="showReport(report.key)" ng-repeat="report in reports" style="border-bottom: solid 1px #CCC">
 				<div class="col-xs-8">
 					<h4>{{report.title}}</h4>
 				</div>

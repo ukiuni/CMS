@@ -10,6 +10,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.persistence.Version;
 
 @Entity
 public class Fold {
@@ -30,6 +31,8 @@ public class Fold {
 	private Date createdAt;
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date updatedAt;
+	@Version
+	private long version;
 
 	public long getId() {
 		return id;
@@ -77,6 +80,14 @@ public class Fold {
 
 	public void setReportKey(String reportKey) {
 		this.reportKey = reportKey;
+	}
+
+	public long getVersion() {
+		return version;
+	}
+
+	public void setVersion(long version) {
+		this.version = version;
 	}
 
 }

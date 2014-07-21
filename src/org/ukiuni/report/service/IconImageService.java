@@ -6,8 +6,6 @@ import java.io.InputStream;
 import java.util.Date;
 import java.util.UUID;
 
-import javax.persistence.NoResultException;
-
 import org.ukiuni.report.entity.Account;
 import org.ukiuni.report.entity.IconImage;
 import org.ukiuni.report.util.DBUtil;
@@ -19,7 +17,7 @@ public class IconImageService {
 	public IconImage regist(Account register, InputStream in) throws IOException {
 		ByteArrayOutputStream bout = new ByteArrayOutputStream();
 		new ImageUtil().trim(in, 120, 120, bout);
-		
+
 		IconImage iconImage = new IconImage();
 		iconImage.setKey(UUID.randomUUID().toString());
 		iconImage.setRegister(register);
@@ -30,10 +28,6 @@ public class IconImageService {
 	}
 
 	public IconImage loadByKey(String key) {
-		try {
-			return dbUtil.findSingleEquals(IconImage.class, "key", key);
-		} catch (NoResultException e) {
-			return null;
-		}
+		return dbUtil.findSingleEquals(IconImage.class, "key", key);
 	}
 }

@@ -1,0 +1,10 @@
+{
+	"appName":"CMS",
+	"index":{
+		"read":"Easy Translate!",
+		"description":"Easy translate with AngularJS."
+	},
+	"error":{
+		"login":"Login error. Name or Password is not match."
+	}
+}

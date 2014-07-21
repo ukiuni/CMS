@@ -9,6 +9,7 @@ import javax.persistence.Id;
 import javax.persistence.Lob;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.persistence.Version;
 
 @Entity
 public class IconImage {
@@ -24,6 +25,8 @@ public class IconImage {
 	private Date createdAt;
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date updatedAt;
+	@Version
+	private long version;
 
 	public long getId() {
 		return id;
@@ -71,6 +74,14 @@ public class IconImage {
 
 	public void setUpdatedAt(Date updatedAt) {
 		this.updatedAt = updatedAt;
+	}
+
+	public long getVersion() {
+		return version;
+	}
+
+	public void setVersion(long version) {
+		this.version = version;
 	}
 
 }

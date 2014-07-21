@@ -6,12 +6,14 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import java.util.List;
+
 import org.junit.After;
-import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.ukiuni.report.entity.Account;
 import org.ukiuni.report.entity.AccountAccessKey;
+import org.ukiuni.report.entity.Fold;
 import org.ukiuni.report.service.AccountService;
 import org.ukiuni.report.util.DBUtil;
 
@@ -28,17 +30,13 @@ public class TestAccountService {
 		DBUtil.closeAll();
 	}
 
-	@Before
-	public void before() throws Exception {
-	}
-
 	@After
 	public void after() throws Exception {
 		DBUtil.closeAll();
 	}
 
 	@Test
-	public void testSave() {
+	public void testCreate() {
 		DBTestUtil.setUpDbWithXML(DBTestUtil.MODE_UNIT_TEST, "emptyData.xml");
 		AccountService accountService = new AccountService();
 		accountService.dbUtil = DBUtil.create(DB_FACTORY_NAME);
@@ -48,13 +46,13 @@ public class TestAccountService {
 		Account account = accountService.create(name, mail, password);
 		assertEquals(name, account.getName());
 		assertEquals(mail, account.getMail());
-		assertNotNull("password-hashed not generate", account.getPasswordHashed());
-		assertNotNull("createdAt not generate", account.getCreatedAt());
+		assertNotNull("password-hashed is not generated", account.getPasswordHashed());
+		assertNotNull("createdAt is not generated", account.getCreatedAt());
 	}
 
 	@Test
 	public void testUpdate() {
-		DBTestUtil.setUpDbWithXML(DBTestUtil.MODE_UNIT_TEST, "oneAccountData.xml");
+		DBTestUtil.setUpDbWithXML(DBTestUtil.MODE_UNIT_TEST, "basicData.xml");
 		AccountService accountService = new AccountService();
 		accountService.dbUtil = DBUtil.create(DB_FACTORY_NAME);
 		String name = "myName";
@@ -69,7 +67,7 @@ public class TestAccountService {
 
 	@Test
 	public void testGenerateAccessKey() {
-		DBTestUtil.setUpDbWithXML(DBTestUtil.MODE_UNIT_TEST, "oneAccountData.xml");
+		DBTestUtil.setUpDbWithXML(DBTestUtil.MODE_UNIT_TEST, "basicData.xml");
 		AccountService accountService = new AccountService();
 		accountService.dbUtil = DBUtil.create(DB_FACTORY_NAME);
 		String name = "myName";
@@ -82,7 +80,7 @@ public class TestAccountService {
 
 	@Test
 	public void testExistsName() {
-		DBTestUtil.setUpDbWithXML(DBTestUtil.MODE_UNIT_TEST, "oneAccountData.xml");
+		DBTestUtil.setUpDbWithXML(DBTestUtil.MODE_UNIT_TEST, "basicData.xml");
 		AccountService accountService = new AccountService();
 		accountService.dbUtil = DBUtil.create(DB_FACTORY_NAME);
 		String name = "myName";
@@ -91,7 +89,7 @@ public class TestAccountService {
 
 	@Test
 	public void testNotExistsName() {
-		DBTestUtil.setUpDbWithXML(DBTestUtil.MODE_UNIT_TEST, "oneAccountData.xml");
+		DBTestUtil.setUpDbWithXML(DBTestUtil.MODE_UNIT_TEST, "basicData.xml");
 		AccountService accountService = new AccountService();
 		accountService.dbUtil = DBUtil.create(DB_FACTORY_NAME);
 		String name = "NotMyName";
@@ -100,7 +98,7 @@ public class TestAccountService {
 
 	@Test
 	public void testFindByName() {
-		DBTestUtil.setUpDbWithXML(DBTestUtil.MODE_UNIT_TEST, "oneAccountData.xml");
+		DBTestUtil.setUpDbWithXML(DBTestUtil.MODE_UNIT_TEST, "basicData.xml");
 		AccountService accountService = new AccountService();
 		accountService.dbUtil = DBUtil.create(DB_FACTORY_NAME);
 		String name = "myName";
@@ -111,7 +109,7 @@ public class TestAccountService {
 
 	@Test
 	public void testExistsMail() {
-		DBTestUtil.setUpDbWithXML(DBTestUtil.MODE_UNIT_TEST, "oneAccountData.xml");
+		DBTestUtil.setUpDbWithXML(DBTestUtil.MODE_UNIT_TEST, "basicData.xml");
 		AccountService accountService = new AccountService();
 		accountService.dbUtil = DBUtil.create(DB_FACTORY_NAME);
 		String mail = "myMail@example.com";
@@ -120,7 +118,7 @@ public class TestAccountService {
 
 	@Test
 	public void testNotExistsMail() {
-		DBTestUtil.setUpDbWithXML(DBTestUtil.MODE_UNIT_TEST, "oneAccountData.xml");
+		DBTestUtil.setUpDbWithXML(DBTestUtil.MODE_UNIT_TEST, "basicData.xml");
 		AccountService accountService = new AccountService();
 		accountService.dbUtil = DBUtil.create(DB_FACTORY_NAME);
 		String mail = "notMyMail@example.com";
@@ -129,7 +127,7 @@ public class TestAccountService {
 
 	@Test
 	public void testFindByAccessKey() {
-		DBTestUtil.setUpDbWithXML(DBTestUtil.MODE_UNIT_TEST, "oneAccountData.xml");
+		DBTestUtil.setUpDbWithXML(DBTestUtil.MODE_UNIT_TEST, "basicData.xml");
 		AccountService accountService = new AccountService();
 		accountService.dbUtil = DBUtil.create(DB_FACTORY_NAME);
 		String accountAccessKey = "4e76a3d4-360d-4d92-b2eb-78674098d824";
@@ -140,11 +138,24 @@ public class TestAccountService {
 
 	@Test
 	public void testFindByNotExistAccessKey() {
-		DBTestUtil.setUpDbWithXML(DBTestUtil.MODE_UNIT_TEST, "oneAccountData.xml");
+		DBTestUtil.setUpDbWithXML(DBTestUtil.MODE_UNIT_TEST, "basicData.xml");
 		AccountService accountService = new AccountService();
 		accountService.dbUtil = DBUtil.create(DB_FACTORY_NAME);
 		String accountAccessKey = "notExist";
 		Account account = accountService.findByAccessKey(accountAccessKey);
 		assertNull(account);
+	}
+
+	@Test
+	public void testFindFolds() {
+		DBTestUtil.setUpDbWithXML(DBTestUtil.MODE_UNIT_TEST, "basicData.xml");
+		AccountService accountService = new AccountService();
+		accountService.dbUtil = DBUtil.create(DB_FACTORY_NAME);
+
+		String name = "myName";
+		Account account = accountService.findByName(name);
+		List<Fold> folds = accountService.findFolds(account);
+
+		assertEquals(1, folds.size());
 	}
 }

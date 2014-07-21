@@ -1,0 +1,10 @@
+{
+	"appName":"CMS",
+	"index":{
+		"read":"簡単国際化！",
+		"description":"AngularJSでも、簡単に国際化対応ができます。"
+	},
+	"error":{
+		"login":"Login error. Name or Password is not match."
+	}
+}

@@ -19,15 +19,31 @@
 <script type="text/javascript" src="scripts/angular-file-upload.min.js"></script>
 <link rel="stylesheet" href="//yandex.st/highlightjs/8.0/styles/github.min.css">
 <script src="//yandex.st/highlightjs/8.0/highlight.min.js"></script>
+<script type="text/javascript" src="scripts/angular-translate.min.js"></script>
+<script type="text/javascript" src="scripts/loader-static-files.js"></script>
 <link rel="stylesheet" href="scripts/application.css">
 </head>
 <body>
 	<div id="header" ng-include="'template/header.html'"></div>
+	<div style="position: fixed; top: 60px; width: 100%; margin: 0; padding: 0;" ng-show="alert">
+		<div class="row" style="margin: 0; padding: 0;">
+			<div class="col-xs-6 col-xs-offset-3" style="padding: 0; z-index: 99;">
+				<alert id="alert" ng-mouseover="cancelAlertCloseTimer()" ng-model="alert" type="alert.type" close="closeAlert()">{{alert.message}}</alert>
+			</div>
+		</div>
+	</div>
 	<div id="content" ng-view></div>
 	<div id="header" ng-include="'template/footer.html'"></div>
 	<script type="text/javascript">
-		var myApp = angular.module('myApp', [ 'ui.bootstrap', 'hc.marked', 'ngRoute', 'ngCookies', 'angularFileUpload' ]);
-		myApp.config([ 'markedProvider', '$routeProvider', '$locationProvider', function(markedProvider, $routeProvider, $locationProvider) {
+		function findLanguage() {
+			try {
+				return (navigator.browserLanguage || navigator.language || navigator.userLanguage).substr(0, 2)
+			} catch (e) {
+				return "en";
+			}
+		}
+		var myApp = angular.module('myApp', [ 'ui.bootstrap', 'hc.marked', 'ngRoute', 'ngCookies', 'angularFileUpload', 'pascalprecht.translate' ]);
+		myApp.config([ 'markedProvider', '$routeProvider', '$locationProvider', '$translateProvider', function(markedProvider, $routeProvider, $locationProvider, $translateProvider) {
 			markedProvider.setOptions({
 				gfm : true,
 				tables : true,
@@ -36,6 +52,14 @@
 					return hljs.highlightAuto(code).value;
 				}
 			});
+			$translateProvider.useStaticFilesLoader({
+				prefix : 'scripts/translate/lang_',
+				suffix : '.json?' + new Date().getTime()
+			});
+			$translateProvider.preferredLanguage(findLanguage());
+			$translateProvider.fallbackLanguage('en');
+			$translateProvider.useMissingTranslationHandlerLog();
+
 			$routeProvider.when('/', {
 				templateUrl : 'template/top.html'
 			}).when('/myPage', {
@@ -56,7 +80,26 @@
 			});
 			$locationProvider.html5Mode(true);
 		} ]);
-		myApp.run([ "$rootScope", "$http", "$cookies", "$location", function($rootScope, $http, $cookies, $location) {
+		myApp.run([ "$rootScope", "$http", "$cookies", "$location", "$timeout", function($rootScope, $http, $cookies, $location, $timeout) {
+			$rootScope.closeAlert = function() {
+				$rootScope.alert = null;
+			}
+			$rootScope.cancelAlertCloseTimer = function() {
+				if ($rootScope.timeoutHandle) {
+					$timeout.cancel($rootScope.timeoutHandle);
+				}
+			}
+			$rootScope.showAlert = function(message, type, time) {
+				var useType = type ? type : 'danger';
+				var useTime = time ? time : 5000;
+				$rootScope.alert = {
+					type : useType,
+					message : message
+				}
+				$rootScope.timeoutHandle = $timeout(function() {
+					$rootScope.closeAlert()
+				}, useTime);
+			}
 			var accountAccessKey = $cookies.accountAccessKey;
 			$rootScope.logout = function() {
 				$location.path('/logout');
@@ -94,7 +137,7 @@
 			$location.path('/');
 		} ]);
 
-		myApp.controller("loginController", [ "$rootScope", "$scope", "$http", "$location", "$cookies", function($rootScope, $scope, $http, $location, $cookies) {
+		myApp.controller("loginController", [ "$rootScope", "$scope", "$http", "$location", "$cookies", "$translate", function($rootScope, $scope, $http, $location, $cookies, $translate) {
 			$scope.tryLoginAccount = {};
 			$scope.newAccount = {};
 			if ($rootScope.loginAccount) {
@@ -125,7 +168,7 @@
 					document.cookie = "accountAccessKey=" + $rootScope.loginAccount.accessKey + ";expires=" + cookieExpires.toGMTString() + ";";
 					routeToAfterLogin();
 				}).error(function(e) {
-					console.log("error" + e);
+					$rootScope.showAlert($translate.instant('error.login'));
 				});
 			}
 			$scope.action = "save";
@@ -333,10 +376,10 @@
 				$scope.report = data;
 				if ("published" == $scope.report.status) {
 					$scope.action = "publish";
-				} else if ("draft" == $scope.report.status) {
-					$scope.action = "save as draft";
 				} else if ("private" == $scope.report.status) {
 					$scope.action = "save as private";
+				} else {
+					$scope.action = "save as draft";
 				}
 			};
 			var loadFail = function(e) {

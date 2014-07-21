@@ -2,14 +2,14 @@ package org.ukiuni.report.service;
 
 import java.security.MessageDigest;
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
-
-import javax.persistence.NoResultException;
 
 import net.arnx.jsonic.util.Base64;
 
 import org.ukiuni.report.entity.Account;
 import org.ukiuni.report.entity.AccountAccessKey;
+import org.ukiuni.report.entity.Fold;
 import org.ukiuni.report.util.DBUtil;
 
 public class AccountService {
@@ -55,31 +55,22 @@ public class AccountService {
 	}
 
 	public Account findByName(String name) {
-		try {
-			return dbUtil.findSingleEquals(Account.class, "name", name);
-		} catch (NoResultException e) {
-			return null;
-		}
+		return dbUtil.findSingleEquals(Account.class, "name", name);
 	}
 
 	public boolean existsMail(String mail) {
-		try {
-			dbUtil.findSingleEquals(Account.class, "mail", mail);
-			return true;
-		} catch (NoResultException e) {
-			return false;
-		}
+		return null != dbUtil.findSingleEquals(Account.class, "mail", mail);
 	}
 
 	public Account findByAccessKey(String accessKey) {
-		try {
-			AccountAccessKey accountAccessKey = dbUtil.findSingleEquals(AccountAccessKey.class, "hash", accessKey);
-			if (null == accountAccessKey) {
-				return null;
-			}
-			return accountAccessKey.getAccount();
-		} catch (NoResultException e) {
+		AccountAccessKey accountAccessKey = dbUtil.findSingleEquals(AccountAccessKey.class, "hash", accessKey);
+		if (null == accountAccessKey) {
 			return null;
 		}
+		return accountAccessKey.getAccount();
+	}
+
+	public List<Fold> findFolds(Account account) {
+		return dbUtil.findList(Fold.class, new DBUtil.WhereCondition[] { new DBUtil.WhereCondition("account", account), new DBUtil.WhereCondition("status", Fold.STATUS_CREATED) }, new DBUtil.Order("createdAt", DBUtil.Order.SequenceTo.DESC));
 	}
 }

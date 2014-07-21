@@ -11,6 +11,7 @@ import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.persistence.Version;
 
 @Entity
 public class AccountAccessKey {
@@ -27,6 +28,16 @@ public class AccountAccessKey {
 	private Date updatedAt;
 	@Enumerated(EnumType.STRING)
 	private Status status;
+	@Version
+	private long version;
+
+	public long getVersion() {
+		return version;
+	}
+
+	public void setVersion(long version) {
+		this.version = version;
+	}
 
 	public Status getStatus() {
 		return status;

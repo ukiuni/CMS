@@ -41,7 +41,7 @@ public class ReportAction {
 		if (null == account) {
 			throw new NotFoundException("account not found");
 		}
-		return reportService.loadByAccount(account);
+		return reportService.findByAccount(account);
 	}
 
 	@GET
@@ -66,7 +66,7 @@ public class ReportAction {
 		ReporterDto reporterDto = new ReporterDto();
 		BeanUtils.copyProperties(reporterDto, report.getAccount());
 		reportDto.setReporter(reporterDto);
-		long foldedCount = reportService.loadFoldedCount(report);
+		long foldedCount = reportService.countFolded(report);
 		reportDto.setFoldedCount(foldedCount);
 		if (null != account) {
 			boolean hasHold = reportService.hasFold(account, report);
@@ -109,7 +109,7 @@ public class ReportAction {
 			throw new NotFoundException("account not found");
 		}
 		reportService.comment(account, report, commentDto.getMessage());
-		List<Comment> comments = reportService.loadComments(report.getKey());
+		List<Comment> comments = reportService.findComments(report.getKey());
 		return toDto(comments);
 	}
 
@@ -122,7 +122,7 @@ public class ReportAction {
 			throw new NotFoundException("report not found");
 		}
 		checkAccessible(accessKey, report);
-		List<Comment> comments = reportService.loadComments(report.getKey());
+		List<Comment> comments = reportService.findComments(report.getKey());
 		return toDto(comments);
 	}
 
@@ -130,24 +130,25 @@ public class ReportAction {
 	@Path("{reportKey}/comment")
 	@Produces(MediaType.APPLICATION_JSON)
 	public List<CommentDto> deleteComments(@QueryParam("accountAccessKey") String accessKey, @QueryParam("commentId") long commentId) throws IllegalAccessException, InvocationTargetException {
-		String status = Comment.STATUS_DELETED;
-		String message = null;
-		return checkAndUpdateComment(accessKey, commentId, status, message);
+		Comment comment = checkAndFindComment(accessKey, commentId);
+		reportService.deleteComment(comment);
+		List<Comment> comments = reportService.findComments(comment.getReportKey());
+		return toDto(comments);
 	}
 
 	@PUT
 	@Path("{reportKey}/comment")
 	@Produces(MediaType.APPLICATION_JSON)
 	public List<CommentDto> updateComments(CommentDto commentDto) throws IllegalAccessException, InvocationTargetException {
-		String status = Comment.STATUS_CREATED;
-		String message = commentDto.getMessage();
-		long commentId = commentDto.getId();
-		String accessKey = commentDto.getAccountAccessKey();
-		return checkAndUpdateComment(accessKey, commentId, status, message);
+		Comment comment = checkAndFindComment(commentDto.getAccountAccessKey(), commentDto.getId());
+		comment.setMessage(commentDto.getMessage());
+		reportService.updateComment(comment);
+		List<Comment> comments = reportService.findComments(comment.getReportKey());
+		return toDto(comments);
 
 	}
 
-	private List<CommentDto> checkAndUpdateComment(String accessKey, long commentId, String status, String message) throws IllegalAccessException, InvocationTargetException {
+	private Comment checkAndFindComment(String accessKey, long commentId) throws IllegalAccessException, InvocationTargetException {
 		Comment comment = reportService.findCommentByKey(commentId);
 		if (null == comment) {
 			throw new NotFoundException("comment not found");
@@ -159,15 +160,7 @@ public class ReportAction {
 		if (account.getId() != comment.getAccount().getId()) {
 			throw new ForbiddenException("comment not accessible");
 		}
-		if (null != status) {
-			comment.setStatus(status);
-		}
-		if (null != message) {
-			comment.setMessage(message);
-		}
-		reportService.updateComment(comment);
-		List<Comment> comments = reportService.loadComments(comment.getReportKey());
-		return toDto(comments);
+		return comment;
 	}
 
 	private List<CommentDto> toDto(List<Comment> comments) throws IllegalAccessException, InvocationTargetException {

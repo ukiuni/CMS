@@ -5,21 +5,21 @@
 			<button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
 				<span class="sr-only">Toggle navigation</span> <span class="icon-bar"></span> <span class="icon-bar"></span> <span class="icon-bar"></span>
 			</button>
-			<a class="navbar-brand" href="#">Project name</a>
+			<a class="navbar-brand" href="#" translate="appName"></a>
 		</div>
 		<div class="navbar-collapse collapse">
 			<ul class="nav navbar-nav navbar-right" ng-show="loginAccount">
 				<li class="dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown">Actions <b class="caret"></b></a>
 					<ul class="dropdown-menu">
-						<li><a ng-click="logout()">logout</a></li>
-						<li><a href="#editReport">create new report</a></li>
+						<li><a id="logoutButton" ng-click="logout()">logout</a></li>
+						<li><a id="headerCreateReportButton" href="#editReport">create new report</a></li>
 					</ul></li>
 				<li>
 					<div class="iconWrapMicro" style="margin-top: 10px; white-space: nowrap;">
 						<nobr>
 							<a href="#myPage"> <img ng-src="{{loginAccount.iconUrl}}" alt="{{report.reporter.name}}" />{{loginAccount.name}}
 							</a>
-							</nobr>
+						</nobr>
 					</div>
 				</li>
 			</ul>

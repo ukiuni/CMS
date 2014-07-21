@@ -56,5 +56,7 @@
 	<classpathentry kind="lib" path="test/libs/TomcatEmbed/tomcat-embed-logging-juli.jar"/>
 	<classpathentry kind="lib" path="test/libs/TomcatEmbed/tomcat-embed-logging-log4j.jar"/>
 	<classpathentry kind="lib" path="test/libs/TomcatEmbed/tomcat7-embed-websocket.jar"/>
+	<classpathentry kind="lib" path="test/libs/TomcatEmbed/tomcat-embed-el.jar"/>
+	<classpathentry kind="lib" path="test/libs/TomcatEmbed/tomcat-embed-jasper.jar"/>
 	<classpathentry kind="output" path="WebContent/WEB-INF/classes"/>
 </classpath>

@@ -8,7 +8,6 @@ import java.io.UnsupportedEncodingException;
 import java.lang.reflect.InvocationTargetException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.List;
 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
@@ -28,7 +27,6 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.StreamingOutput;
 
-import net.arnx.jsonic.JSON;
 import net.arnx.jsonic.util.Base64;
 
 import org.apache.commons.beanutils.BeanUtils;
@@ -40,19 +38,12 @@ import org.ukiuni.report.entity.AccountAccessKey;
 import org.ukiuni.report.entity.IconImage;
 import org.ukiuni.report.service.AccountService;
 import org.ukiuni.report.service.IconImageService;
-import org.ukiuni.report.util.DBUtil;
 
 @Path("account")
 public class AccountAction {
 	private static final long IMAGE_ICON_SOURCE_MAX_SIZE = 10000000;
 	public AccountService accountService = new AccountService();
 	public IconImageService iconImageService = new IconImageService();
-
-	@GET
-	@Produces(MediaType.APPLICATION_JSON)
-	public List<Account> loadAcc() {
-		return DBUtil.create("org.ukiuni.report").findAll(Account.class);
-	}
 
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
@@ -106,8 +97,7 @@ public class AccountAction {
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("update")
-	public AccountDto update(String body) throws IllegalAccessException, InvocationTargetException {
-		AccountDto saveAccount = JSON.decode(body, AccountDto.class);
+	public AccountDto update(AccountDto saveAccount) throws IllegalAccessException, InvocationTargetException {
 		Account targetAccount = accountService.findByAccessKey(saveAccount.getAccessKey());
 		if (targetAccount == null) {
 			throw new NotFoundException("account not found");
@@ -161,6 +151,7 @@ public class AccountAction {
 		private String mail;
 		@NotNull
 		private String password;
+		private String fullName;
 		@NotNull
 		private String profile;
 		private String iconUrl;
@@ -225,6 +216,14 @@ public class AccountAction {
 
 		public void setAccessKey(String accessKey) {
 			this.accessKey = accessKey;
+		}
+
+		public String getFullName() {
+			return fullName;
+		}
+
+		public void setFullName(String fullName) {
+			this.fullName = fullName;
 		}
 	}
 
