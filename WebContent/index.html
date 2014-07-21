@@ -278,6 +278,9 @@
 				$location.path('/login');
 			}
 			$scope.comment = function() {
+				if ("" == $scope.inputMessage) {
+					return;
+				}
 				$http.post("api/report/comment", {
 					accountAccessKey : $rootScope.loginAccount.accessKey,
 					reportKey : $scope.report.key,

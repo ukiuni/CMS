@@ -119,7 +119,7 @@ public class IntegrationTest {
 
 		login("myName", "myPassword");
 		waitForMyPage();
-		
+
 		WebElement element;
 		assertNotNull((element = driver.findElement(By.className("btn"))));
 		assertEquals("Edit Profile", element.getText());
@@ -314,7 +314,7 @@ public class IntegrationTest {
 
 		titleInput.clear();
 		contentArea.clear();
-		
+
 		titleInput.sendKeys(newTitle);
 		contentArea.sendKeys(myContent);
 
@@ -329,7 +329,142 @@ public class IntegrationTest {
 		assertEquals(newTitle, reports.get(0).findElement(By.tagName("h4")).getText());
 	}
 
+	@Test
+	public void testFold() {
+		driver.get(url());
+		login("myName", "myPassword");
+		waitForMyPage();
+		driver.findElements(By.className("reportRow")).get(5).findElement(By.className("label")).click();
+
+		waitForContentPage();
+
+		WebElement foldButton = null;
+		for (WebElement btn : driver.findElements(By.className("btn"))) {
+			if ("Fold".equals(btn.getText())) {
+				foldButton = btn;
+				break;
+			}
+		}
+		foldButton.click();
+		waitForElementByClassNameAndValue("btn", "Unfold");
+
+		foldButton = null;
+		for (WebElement btn : driver.findElements(By.className("btn"))) {
+			if ("Unfold".equals(btn.getText())) {
+				foldButton = btn;
+				break;
+			}
+		}
+		foldButton.click();
+		waitForElementByClassNameAndValue("btn", "Fold");
+	}
+
+	@Test
+	public void testFoldStartsWithNotLogin() {
+		driver.get(url("report?key=b564857c-b762-4eaf-a95e-299fa41e25b9"));
+		waitForContentPage();
+
+		WebElement foldButton = null;
+		for (WebElement btn : driver.findElements(By.className("btn"))) {
+			if ("Fold".equals(btn.getText())) {
+				foldButton = btn;
+				break;
+			}
+		}
+		foldButton.click();
+		waitForLoginPage();
+
+		loginWithoutWait("myName", "myPassword");
+		waitForContentPage();
+		click("Fold");
+		waitForElementByClassNameAndValue("btn", "Unfold");
+	}
+
+	@Test
+	public void testComment() {
+		driver.get(url());
+		login("myName", "myPassword");
+		waitForMyPage();
+		driver.findElements(By.className("reportRow")).get(5).findElement(By.className("label")).click();
+
+		waitForContentPage();
+
+		final int commentCount = driver.findElements(By.className("comment")).size();
+
+		String comment = "Integration Test Comment";
+		WebElement contentArea = driver.findElement(By.tagName("textarea"));
+		contentArea.sendKeys(comment);
+
+		click("Comment");
+
+		waitFor(driver, new ExpectedCondition<Boolean>() {
+			@Override
+			public Boolean apply(WebDriver arg0) {
+				return driver.findElements(By.className("comment")).size() > commentCount;
+			}
+		});
+		List<WebElement> comments = driver.findElements(By.className("message"));
+		assertEquals(comment, comments.get(comments.size() - 1).getText());
+	}
+
+	@Test
+	public void testCommentStartsWithNotLogin() {
+		driver.get(url("report?key=b564857c-b762-4eaf-a95e-299fa41e25b9"));
+		waitForContentPage();
+
+		click("Login or Create Account");
+
+		waitForLoginPage();
+
+		loginWithoutWait("myName", "myPassword");
+		waitForContentPage();
+
+		final int commentCount = driver.findElements(By.className("comment")).size();
+
+		String comment = "Integration Test Comment";
+		WebElement contentArea = driver.findElement(By.tagName("textarea"));
+		contentArea.sendKeys(comment);
+
+		click("Comment");
+
+		waitFor(driver, new ExpectedCondition<Boolean>() {
+			@Override
+			public Boolean apply(WebDriver arg0) {
+				return driver.findElements(By.className("comment")).size() > commentCount;
+			}
+		});
+		List<WebElement> comments = driver.findElements(By.className("message"));
+		assertEquals(comment, comments.get(comments.size() - 1).getText());
+	}
+
+	@Test
+	public void testDeleteComment() {
+		testComment();
+		int commentSize = driver.findElements(By.className("message")).size();
+		driver.findElement(By.className("glyphicon-remove-circle")).click();
+		waitForElementByClassNameAndValue("btn", "Delete");
+		click("Delete");
+		assertEquals(commentSize - 1, driver.findElements(By.className("message")).size());
+	}
+
+	@Test
+	public void testUpdateComment() {
+		testComment();
+		int commentSize = driver.findElements(By.className("message")).size();
+		driver.findElement(By.className("glyphicon-pencil")).click();
+		waitForElementByClassNameAndValue("btn", "Update");
+		String newComment = "updatedComment";
+		driver.findElement(By.className("ng-pristine")).sendKeys(newComment);
+		click("Update");
+		assertEquals(commentSize, driver.findElements(By.className("message")).size());
+	}
+
 	private void login(String name, String password) {
+		loginWithoutWait(name, password);
+		waitForMyPage();
+	}
+
+	private void loginWithoutWait(String name, String password) {
 		WebElement loginForm = driver.findElement(By.name("loginForm"));
 		WebElement nameForm = loginForm.findElement(By.name("name"));
 		WebElement passwordForm = loginForm.findElement(By.name("password"));
@@ -337,7 +472,6 @@ public class IntegrationTest {
 		nameForm.sendKeys(name);
 		passwordForm.sendKeys(password);
 		loginButton.click();
-		waitForMyPage();
 	}
 
 	private void clickWithId(String id) {
@@ -359,6 +493,14 @@ public class IntegrationTest {
 
 	private void waitForEditContentPage() {
 		waitForElementById("doActionButton");
+	}
+
+	private void waitForContentPage() {
+		waitForElementByClassNameAndValue("btn", "Fold");
+	}
+
+	private void waitForLoginPage() {
+		waitForElementByClassNameAndValue("btn", "Login");
 	}
 
 	@SuppressWarnings("unchecked")
