@@ -67,10 +67,10 @@ public class TestReportService {
 		assertEquals(10, reports.size());
 		for (Report report : reports) {
 			assertEquals(name, report.getAccount().getName());
-			assertNotNull("key is not generated", report.getKey());
-			assertNotNull("pk is not generated", report.getPk());
-			assertNotNull("createdAt not generate", report.getCreatedAt());
-			assertEquals(Report.STATUS_DRAFT, report.getStatus());
+			assertNotNull("key is not loaded", report.getKey());
+			assertNotNull("pk is not loaded", report.getPk());
+			assertNotNull("createdAt not loaded", report.getCreatedAt());
+			assertNotNull("draft not loaded", report.getStatus());
 		}
 	}
 

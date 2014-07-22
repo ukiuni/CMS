@@ -5,12 +5,19 @@ import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
+import javax.persistence.EntityManager;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Root;
+
 import net.arnx.jsonic.util.Base64;
 
 import org.ukiuni.report.entity.Account;
 import org.ukiuni.report.entity.AccountAccessKey;
 import org.ukiuni.report.entity.Fold;
+import org.ukiuni.report.entity.Follow;
 import org.ukiuni.report.util.DBUtil;
+import org.ukiuni.report.util.DBUtil.Work;
 
 public class AccountService {
 	public DBUtil dbUtil = DBUtil.create("org.ukiuni.report");
@@ -72,5 +79,56 @@ public class AccountService {
 
 	public List<Fold> findFolds(Account account) {
 		return dbUtil.findList(Fold.class, new DBUtil.WhereCondition[] { new DBUtil.WhereCondition("account", account), new DBUtil.WhereCondition("status", Fold.STATUS_CREATED) }, new DBUtil.Order("createdAt", DBUtil.Order.SequenceTo.DESC));
+	}
+
+	public void follow(Account account, long targetAccountId) {
+		Account targetAccount = dbUtil.find(Account.class, targetAccountId);
+		boolean followed = checkFollowing(account, targetAccount);
+		if (followed) {
+			return;
+		}
+		Follow follow = new Follow();
+		follow.setFollower(account);
+		follow.setFollows(targetAccount);
+		follow.setStatus(Follow.STATUS_CREATED);
+		follow.setCreatedAt(new Date());
+		dbUtil.persist(follow);
+	}
+
+	private boolean checkFollowing(Account account, Account targetAccount) {
+		List<Follow> follows = dbUtil.findList(Follow.class, new DBUtil.WhereCondition[] { new DBUtil.WhereCondition("follower", account), new DBUtil.WhereCondition("follows", targetAccount) });
+		boolean followed = false;
+		for (Follow follow : follows) {
+			if (Follow.STATUS_CREATED.equals(follow.getStatus())) {
+				followed = true;
+			}
+		}
+		return followed;
+	}
+
+	public List<Follow> findFollower(Account account) {
+		return dbUtil.findList(Follow.class, new DBUtil.WhereCondition[] { new DBUtil.WhereCondition("follows", account), new DBUtil.WhereCondition("status", Follow.STATUS_CREATED) }, new DBUtil.Order("createdAt", DBUtil.Order.SequenceTo.DESC));
+	}
+
+	public void unfollow(final Account account, long targetAccountId) {
+		final Account targetAccount = dbUtil.find(Account.class, targetAccountId);
+		dbUtil.execute(new Work<Void>() {
+			@Override
+			public Void execute(EntityManager em) {
+				CriteriaBuilder cb = em.getCriteriaBuilder();
+				CriteriaQuery<Follow> cq = cb.createQuery(Follow.class);
+				Root<Follow> r = cq.from(Follow.class);
+				cq.where(cb.and(cb.equal(r.get("follower"), account), cb.equal(r.get("follows"), targetAccount)));
+				List<Follow> followses = em.createQuery(cq.select(r)).getResultList();
+				for (Follow follow : followses) {
+					follow.setStatus(Follow.STATUS_DELETED);
+				}
+				return null;
+			}
+		});
+	}
+
+	public boolean following(Account account, Account targetAccount) {
+		return checkFollowing(account, targetAccount);
 	}
 }

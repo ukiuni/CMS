@@ -71,6 +71,8 @@ public class ReportAction {
 		if (null != account) {
 			boolean hasHold = reportService.hasFold(account, report);
 			reportDto.setFolded(hasHold);
+			boolean following = accountService.following(account, report.getAccount());
+			reporterDto.setFollowing(following);
 		}
 		return reportDto;
 	}
@@ -253,6 +255,7 @@ public class ReportAction {
 		private String fullName;
 		private String profile;
 		private String iconUrl;
+		private boolean following;
 
 		public long getId() {
 			return id;
@@ -292,6 +295,14 @@ public class ReportAction {
 
 		public void setIconUrl(String iconUrl) {
 			this.iconUrl = iconUrl;
+		}
+
+		public boolean isFollowing() {
+			return following;
+		}
+
+		public void setFollowing(boolean following) {
+			this.following = following;
 		}
 	}
 

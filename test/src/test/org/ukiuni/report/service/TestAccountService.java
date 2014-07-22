@@ -14,6 +14,7 @@ import org.junit.Test;
 import org.ukiuni.report.entity.Account;
 import org.ukiuni.report.entity.AccountAccessKey;
 import org.ukiuni.report.entity.Fold;
+import org.ukiuni.report.entity.Follow;
 import org.ukiuni.report.service.AccountService;
 import org.ukiuni.report.util.DBUtil;
 
@@ -40,9 +41,9 @@ public class TestAccountService {
 		DBTestUtil.setUpDbWithXML(DBTestUtil.MODE_UNIT_TEST, "emptyData.xml");
 		AccountService accountService = new AccountService();
 		accountService.dbUtil = DBUtil.create(DB_FACTORY_NAME);
-		String name = "myName";
+		String name = "myName4";
 		String password = "myPassword";
-		String mail = "myMail@example.com";
+		String mail = "myMail4@example.com";
 		Account account = accountService.create(name, mail, password);
 		assertEquals(name, account.getName());
 		assertEquals(mail, account.getMail());
@@ -157,5 +158,46 @@ public class TestAccountService {
 		List<Fold> folds = accountService.findFolds(account);
 
 		assertEquals(1, folds.size());
+	}
+
+	@Test
+	public void testFollow() {
+		DBTestUtil.setUpDbWithXML(DBTestUtil.MODE_UNIT_TEST, "basicData.xml");
+		AccountService accountService = new AccountService();
+		accountService.dbUtil = DBUtil.create(DB_FACTORY_NAME);
+		Account account = accountService.findByName("myName");
+		Account account2 = accountService.findByName("myName2");
+		int followersCount = accountService.findFollower(account2).size();
+		accountService.follow(account, account2.getId());
+		List<Follow> follower = accountService.findFollower(account2);
+
+		assertEquals(followersCount + 1, follower.size());
+	}
+	
+	@Test
+	public void testUnfollow() {
+		DBTestUtil.setUpDbWithXML(DBTestUtil.MODE_UNIT_TEST, "basicData.xml");
+		AccountService accountService = new AccountService();
+		accountService.dbUtil = DBUtil.create(DB_FACTORY_NAME);
+		Account account = accountService.findByName("myName");
+		Account account2 = accountService.findByName("myName3");
+		int followersCount = accountService.findFollower(account2).size();
+		accountService.unfollow(account, account2.getId());
+		List<Follow> follower = accountService.findFollower(account2);
+
+		assertEquals(followersCount - 1, follower.size());
+	}
+	
+	@Test
+	public void testfollowing() {
+		DBTestUtil.setUpDbWithXML(DBTestUtil.MODE_UNIT_TEST, "basicData.xml");
+		AccountService accountService = new AccountService();
+		accountService.dbUtil = DBUtil.create(DB_FACTORY_NAME);
+		Account account = accountService.findByName("myName");
+		Account account2 = accountService.findByName("myName2");
+		Account account3 = accountService.findByName("myName3");
+		
+		assertTrue("shuld be follow", accountService.following(account, account3));
+		assertFalse("shuld not be follow", accountService.following(account, account2));
 	}
 }

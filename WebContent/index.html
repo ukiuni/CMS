@@ -273,6 +273,26 @@
 			$scope.unfold = function() {
 				switchFold(false);
 			}
+			$scope.follow = function() {
+				$http.post("api/account/follow", {
+					accountAccessKey : $rootScope.loginAccount.accessKey,
+					targetAccountId : $scope.report.reporter.id,
+				}).success(function() {
+					$scope.report.reporter.following = true;
+				}).error(function(e) {
+					console.log("error " + e)
+				});
+			}
+			$scope.unfollow = function() {
+				$http.put("api/account/unfollow", {
+					accountAccessKey : $rootScope.loginAccount.accessKey,
+					targetAccountId : $scope.report.reporter.id,
+				}).success(function() {
+					$scope.report.reporter.following = false;
+				}).error(function(e) {
+					console.log("error " + e)
+				});
+			}
 			$scope.createAccountForComment = function() {
 				$location.search('afterLoginPath', $location.path())
 				$location.path('/login');

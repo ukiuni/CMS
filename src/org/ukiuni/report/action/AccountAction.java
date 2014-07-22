@@ -48,7 +48,7 @@ public class AccountAction {
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	public AccountDto create(AccountDto saveAccount) throws IllegalAccessException, InvocationTargetException, NoSuchAlgorithmException, UnsupportedEncodingException {
+	public AccountDto create(AccountDetailDto saveAccount) throws IllegalAccessException, InvocationTargetException, NoSuchAlgorithmException, UnsupportedEncodingException {
 		if (accountService.existsName(saveAccount.getName())) {
 			throw new ResponseServerStatusException(409, "name");
 		}
@@ -68,8 +68,8 @@ public class AccountAction {
 	@Path("login")
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	public AccountDto login(AccountDto saveAccount) throws IllegalAccessException, InvocationTargetException, NoSuchAlgorithmException, UnsupportedEncodingException {
-		Account account = accountService.findByName(saveAccount.name);
+	public AccountDto login(AccountDetailDto saveAccount) throws IllegalAccessException, InvocationTargetException, NoSuchAlgorithmException, UnsupportedEncodingException {
+		Account account = accountService.findByName(saveAccount.getName());
 		if (null == account || !account.getPasswordHashed().equals(Base64.encode(MessageDigest.getInstance("SHA1").digest(saveAccount.getPassword().getBytes("UTF-8"))))) {
 			throw new ResponseServerStatusException(400, "name or password not match");
 		}
@@ -97,7 +97,7 @@ public class AccountAction {
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("update")
-	public AccountDto update(AccountDto saveAccount) throws IllegalAccessException, InvocationTargetException {
+	public AccountDto update(AccountDetailDto saveAccount) throws IllegalAccessException, InvocationTargetException {
 		Account targetAccount = accountService.findByAccessKey(saveAccount.getAccessKey());
 		if (targetAccount == null) {
 			throw new NotFoundException("account not found");
@@ -123,6 +123,30 @@ public class AccountAction {
 		IconImage iconImage = iconImageService.regist(account, file);
 		return iconImage.getKey();
 	}
+	
+	@POST
+	@Path("/follow")
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.TEXT_PLAIN)
+	public void follow(FollowDto follow) throws IOException {
+		Account account = accountService.findByAccessKey(follow.getAccountAccessKey());
+		if (null == account) {
+			throw new NotFoundException("account not found");
+		}
+		accountService.follow(account, follow.getTargetAccountId());
+	}
+	
+	@PUT
+	@Path("/unfollow")
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.TEXT_PLAIN)
+	public void unfollow(FollowDto follow) throws IOException {
+		Account account = accountService.findByAccessKey(follow.getAccountAccessKey());
+		if (null == account) {
+			throw new NotFoundException("account not found");
+		}
+		accountService.unfollow(account, follow.getTargetAccountId());
+	}
 
 	@GET
 	@Path("/icon/{imageKey}")
@@ -141,16 +165,34 @@ public class AccountAction {
 		}).build();
 	}
 
-	@SuppressWarnings("serial")
-	public static class AccountDto implements Serializable {
-		private long id;
-		@Size(min = 6, max = 20, message = "An event's name must contain between 6 and 1000 characters")
-		// TODO JSONだとvalidationが効かない
-		private String name;
+	public static class AccountDetailDto extends AccountDto {
 		@NotNull
 		private String mail;
 		@NotNull
 		private String password;
+
+		public String getMail() {
+			return mail;
+		}
+
+		public void setMail(String mail) {
+			this.mail = mail;
+		}
+
+		public String getPassword() {
+			return password;
+		}
+
+		public void setPassword(String password) {
+			this.password = password;
+		}
+	}
+
+	public static class AccountDto {
+		private long id;
+		@Size(min = 6, max = 20, message = "An event's name must contain between 6 and 1000 characters")
+		// TODO JSONだとvalidationが効かない
+		private String name;
 		private String fullName;
 		@NotNull
 		private String profile;
@@ -173,22 +215,6 @@ public class AccountAction {
 			this.name = name;
 		}
 
-		public String getMail() {
-			return mail;
-		}
-
-		public void setMail(String mail) {
-			this.mail = mail;
-		}
-
-		public String getPassword() {
-			return password;
-		}
-
-		public void setPassword(String password) {
-			this.password = password;
-		}
-
 		public String getProfile() {
 			return profile;
 		}
@@ -203,11 +229,6 @@ public class AccountAction {
 
 		public void setIconUrl(String iconUrl) {
 			this.iconUrl = iconUrl;
-		}
-
-		@Override
-		public String toString() {
-			return "SaveAccount [name=" + name + ", mail=" + mail + ", password=" + password + ", profile=" + profile + ", iconUrl=" + iconUrl + "]";
 		}
 
 		public String getAccessKey() {
@@ -255,6 +276,27 @@ public class AccountAction {
 
 		public void setIconUrl(String iconUrl) {
 			this.iconUrl = iconUrl;
+		}
+	}
+
+	public static class FollowDto {
+		private long targetAccountId;
+		private String accountAccessKey;
+
+		public long getTargetAccountId() {
+			return targetAccountId;
+		}
+
+		public void setTargetAccountId(long targetAccountId) {
+			this.targetAccountId = targetAccountId;
+		}
+
+		public String getAccountAccessKey() {
+			return accountAccessKey;
+		}
+
+		public void setAccountAccessKey(String accountAccessKey) {
+			this.accountAccessKey = accountAccessKey;
 		}
 	}
 }

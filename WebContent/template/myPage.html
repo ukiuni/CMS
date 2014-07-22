@@ -23,7 +23,8 @@
 			</div>
 		</div>
 		<div class="col-xs-8" style="height: 100%; overflow-y: scroll;">
-			<div class="row">
+			<tabset> <tab heading="Reports">
+			<div class="row" style="margin-top: 10px">
 				<div class="col-xs-12" style="margin-bottom: 10px">
 					<button type="button" class="btn btn-primary" ng-click="createReport()">Create New Report</button>
 				</div>
@@ -37,6 +38,8 @@
 					<span class="animate-switch label label-primary" ng-switch-when="published" ng-click="showPublishedReport(report, $event)">published</span> <span class="animate-switch label label-default" ng-switch-when="draft">Draft</span> <span class="animate-switch label label-default" ng-switch-when="private">Private</span> <span class="animate-switch label label-default" ng-switch-default>Draft</span>
 				</div>
 			</div>
+			</tab>
+			 <tab heading="News"></tab> </tabset>
 		</div>
 	</div>
 </div>
