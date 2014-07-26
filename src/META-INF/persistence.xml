@@ -6,6 +6,7 @@
 		transaction-type="RESOURCE_LOCAL">
 		<exclude-unlisted-classes>false</exclude-unlisted-classes>
 		<properties>
+			<property name="eclipselink.canonicalmodel.subpackage" value="production" />
 			<property name="javax.persistence.jdbc.driver" value="org.h2.Driver" />
 			<property name="javax.persistence.jdbc.url" value="jdbc:h2:file:./db/CMS.db" />
 			<property name="javax.persistence.jdbc.user" value="test" />
@@ -23,6 +24,7 @@
 		transaction-type="RESOURCE_LOCAL">
 		<exclude-unlisted-classes>false</exclude-unlisted-classes>
 		<properties>
+			<property name="eclipselink.canonicalmodel.subpackage" value="unitTest" />
 			<property name="javax.persistence.jdbc.driver" value="org.h2.Driver" />
 			<property name="javax.persistence.jdbc.url" value="jdbc:h2:file:./test/db/unitTest.db" />
 			<property name="javax.persistence.jdbc.user" value="test" />
@@ -36,11 +38,12 @@
 			<property name="eclipselink.logging.parameters" value="true" />
 		</properties>
 	</persistence-unit>
-	
+
 	<persistence-unit name="org.ukiuni.report.integrationTest"
 		transaction-type="RESOURCE_LOCAL">
 		<exclude-unlisted-classes>false</exclude-unlisted-classes>
 		<properties>
+			<property name="eclipselink.canonicalmodel.subpackage" value="integrationTest" />
 			<property name="javax.persistence.jdbc.driver" value="org.h2.Driver" />
 			<property name="javax.persistence.jdbc.url" value="jdbc:h2:file:./test/db/integrationTest.db" />
 			<property name="javax.persistence.jdbc.user" value="test" />

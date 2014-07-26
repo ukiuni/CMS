@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<project basedir="." default="makeWar" name="CMS">
+	<property environment="env" />
+	<property name="junit.output.dir" value="build/junit" />
+	<property name="debuglevel" value="source,lines,vars" />
+	<property name="target" value="1.7" />
+	<property name="source" value="1.7" />
+	<property name="classes.dir" value="WebContent/WEB-INF/classes" />
+	<property name="test.classes.dir" value="WebContent/WEB-INF/classes" />
+	<path id="Web App Libraries.libraryclasspath">
+		<pathelement location="WebContent/WEB-INF/lib/aopalliance-repackaged-2.3.0-b05.jar" />
+		<pathelement location="WebContent/WEB-INF/lib/asm-debug-all-5.0.2.jar" />
+		<pathelement location="WebContent/WEB-INF/lib/com.sun.tools.xjc_2.2.0.jar" />
+		<pathelement location="WebContent/WEB-INF/lib/com.sun.xml.bind_2.2.0.v201004141950.jar" />
+		<pathelement location="WebContent/WEB-INF/lib/commonj.sdo_2.1.1.v201112051852.jar" />
+		<pathelement location="WebContent/WEB-INF/lib/commons-beanutils-1.9.2.jar" />
+		<pathelement location="WebContent/WEB-INF/lib/commons-collections-3.2.1.jar" />
+		<pathelement location="WebContent/WEB-INF/lib/commons-logging-1.1.3.jar" />
+		<pathelement location="WebContent/WEB-INF/lib/eclipselink.jar" />
+		<pathelement location="WebContent/WEB-INF/lib/h2-1.4.178.jar" />
+		<pathelement location="WebContent/WEB-INF/lib/hk2-api-2.3.0-b05.jar" />
+		<pathelement location="WebContent/WEB-INF/lib/hk2-locator-2.3.0-b05.jar" />
+		<pathelement location="WebContent/WEB-INF/lib/hk2-utils-2.3.0-b05.jar" />
+		<pathelement location="WebContent/WEB-INF/lib/javassist-3.18.1-GA.jar" />
+		<pathelement location="WebContent/WEB-INF/lib/javax.activation_1.1.0.v201108011116.jar" />
+		<pathelement location="WebContent/WEB-INF/lib/javax.annotation-api-1.2.jar" />
+		<pathelement location="WebContent/WEB-INF/lib/javax.inject-2.3.0-b05.jar" />
+		<pathelement location="WebContent/WEB-INF/lib/javax.mail_1.4.0.v201005080615.jar" />
+		<pathelement location="WebContent/WEB-INF/lib/javax.persistence_2.1.0.v201304241213.jar" />
+		<pathelement location="WebContent/WEB-INF/lib/javax.servlet-api-3.0.1.jar" />
+		<pathelement location="WebContent/WEB-INF/lib/javax.ws.rs-api-2.0.jar" />
+		<pathelement location="WebContent/WEB-INF/lib/javax.xml.bind_2.2.0.v201105210648.jar" />
+		<pathelement location="WebContent/WEB-INF/lib/javax.xml.stream_1.0.1.v201004272200.jar" />
+		<pathelement location="WebContent/WEB-INF/lib/jaxb-api-2.2.7.jar" />
+		<pathelement location="WebContent/WEB-INF/lib/jersey-client.jar" />
+		<pathelement location="WebContent/WEB-INF/lib/jersey-common.jar" />
+		<pathelement location="WebContent/WEB-INF/lib/jersey-container-servlet-core.jar" />
+		<pathelement location="WebContent/WEB-INF/lib/jersey-container-servlet.jar" />
+		<pathelement location="WebContent/WEB-INF/lib/jersey-guava-2.9.jar" />
+		<pathelement location="WebContent/WEB-INF/lib/jersey-media-multipart-2.10.jar" />
+		<pathelement location="WebContent/WEB-INF/lib/jersey-server.jar" />
+		<pathelement location="WebContent/WEB-INF/lib/jsonic-1.3.5.jar" />
+		<pathelement location="WebContent/WEB-INF/lib/mimepull-1.6.jar" />
+		<pathelement location="WebContent/WEB-INF/lib/org.eclipse.persistence.jpa.modelgen_2.5.2.v20140319-9ad6abd.jar" />
+		<pathelement location="WebContent/WEB-INF/lib/org.eclipse.persistence.jpars_2.5.2.v20140319-9ad6abd.jar" />
+		<pathelement location="WebContent/WEB-INF/lib/org.osgi.core-4.2.0.jar" />
+		<pathelement location="WebContent/WEB-INF/lib/osgi-resource-locator-1.0.1.jar" />
+		<pathelement location="WebContent/WEB-INF/lib/persistence-api-1.0.jar" />
+		<pathelement location="WebContent/WEB-INF/lib/validation-api-1.1.0.Final.jar" />
+	</path>
+	<path id="CMS.test.classpath">
+		<pathelement location="${classes.dir}" />
+		<pathelement location="${test.classes.dir}" />
+		<path refid="Web App Libraries.libraryclasspath" />
+		<pathelement location="test/libs/junit.jar" />
+		<pathelement location="test/libs/org.hamcrest.core_1.3.0.v201303031735.jar" />
+		<pathelement location="test/libs/dbunit-2.5.0.jar" />
+		<pathelement location="test/libs/slf4j-api-1.7.7.jar" />
+		<pathelement location="test/libs/slf4j-simple-1.7.7.jar" />
+		<pathelement location="test/libs/Selenium/libs/apache-mime4j-0.6.jar" />
+		<pathelement location="test/libs/Selenium/libs/bsh-1.3.0.jar" />
+		<pathelement location="test/libs/Selenium/libs/cglib-nodep-2.1_3.jar" />
+		<pathelement location="test/libs/Selenium/libs/commons-codec-1.9.jar" />
+		<pathelement location="test/libs/Selenium/libs/commons-collections-3.2.1.jar" />
+		<pathelement location="test/libs/Selenium/libs/commons-exec-1.1.jar" />
+		<pathelement location="test/libs/Selenium/libs/commons-io-2.4.jar" />
+		<pathelement location="test/libs/Selenium/libs/commons-jxpath-1.3.jar" />
+		<pathelement location="test/libs/Selenium/libs/commons-lang3-3.2.1.jar" />
+		<pathelement location="test/libs/Selenium/libs/commons-logging-1.1.3.jar" />
+		<pathelement location="test/libs/Selenium/libs/cssparser-0.9.11.jar" />
+		<pathelement location="test/libs/Selenium/libs/guava-15.0.jar" />
+		<pathelement location="test/libs/Selenium/libs/hamcrest-core-1.3.jar" />
+		<pathelement location="test/libs/Selenium/libs/hamcrest-library-1.3.jar" />
+		<pathelement location="test/libs/Selenium/libs/htmlunit-2.14.jar" />
+		<pathelement location="test/libs/Selenium/libs/htmlunit-core-js-2.14.jar" />
+		<pathelement location="test/libs/Selenium/libs/httpclient-4.3.2.jar" />
+		<pathelement location="test/libs/Selenium/libs/httpcore-4.3.1.jar" />
+		<pathelement location="test/libs/Selenium/libs/httpmime-4.3.2.jar" />
+		<pathelement location="test/libs/Selenium/libs/ini4j-0.5.2.jar" />
+		<pathelement location="test/libs/Selenium/libs/jcommander-1.29.jar" />
+		<pathelement location="test/libs/Selenium/libs/jetty-websocket-8.1.8.jar" />
+		<pathelement location="test/libs/Selenium/libs/jna-3.4.0.jar" />
+		<pathelement location="test/libs/Selenium/libs/jna-platform-3.4.0.jar" />
+		<pathelement location="test/libs/Selenium/libs/json-20080701.jar" />
+		<pathelement location="test/libs/Selenium/libs/junit-dep-4.11.jar" />
+		<pathelement location="test/libs/Selenium/libs/nekohtml-1.9.20.jar" />
+		<pathelement location="test/libs/Selenium/libs/netty-3.5.7.Final.jar" />
+		<pathelement location="test/libs/Selenium/libs/operadriver-1.5.jar" />
+		<pathelement location="test/libs/Selenium/libs/phantomjsdriver-1.1.0.jar" />
+		<pathelement location="test/libs/Selenium/libs/protobuf-java-2.4.1.jar" />
+		<pathelement location="test/libs/Selenium/libs/sac-1.3.jar" />
+		<pathelement location="test/libs/Selenium/libs/serializer-2.7.1.jar" />
+		<pathelement location="test/libs/Selenium/libs/testng-6.8.5.jar" />
+		<pathelement location="test/libs/Selenium/libs/xalan-2.7.1.jar" />
+		<pathelement location="test/libs/Selenium/libs/xercesImpl-2.11.0.jar" />
+		<pathelement location="test/libs/Selenium/libs/xml-apis-1.4.01.jar" />
+		<pathelement location="test/libs/Selenium/selenium-java-2.42.2.jar" />
+		<pathelement location="test/libs/TomcatEmbed/ecj-P20140317-1600.jar" />
+		<pathelement location="test/libs/TomcatEmbed/tomcat-dbcp.jar" />
+		<pathelement location="test/libs/TomcatEmbed/tomcat-embed-core.jar" />
+		<pathelement location="test/libs/TomcatEmbed/tomcat-embed-logging-juli.jar" />
+		<pathelement location="test/libs/TomcatEmbed/tomcat-embed-logging-log4j.jar" />
+		<pathelement location="test/libs/TomcatEmbed/tomcat7-embed-websocket.jar" />
+		<pathelement location="test/libs/TomcatEmbed/tomcat-embed-el.jar" />
+		<pathelement location="test/libs/TomcatEmbed/tomcat-embed-jasper.jar" />
+	</path>
+	<target name="init">
+		<mkdir dir="${classes.dir}" />
+		<mkdir dir="${test.classes.dir}" />
+		<copy includeemptydirs="false" todir="${classes.dir}">
+			<fileset dir="src">
+				<exclude name="**/*.java" />
+			</fileset>
+		</copy>
+		<copy includeemptydirs="false" todir="${test.classes.dir}">
+			<fileset dir="test/src">
+				<exclude name="**/*.java" />
+			</fileset>
+		</copy>
+	</target>
+	<target name="clean">
+		<delete dir="${classes.dir}" />
+		<delete dir="${test.classes.dir}" />
+	</target>
+	<target depends="clean, init" name="build">
+		<echo message="${ant.project.name}: ${ant.file}" />
+		<javac debug="true" debuglevel="${debuglevel}" destdir="${classes.dir}" includeantruntime="false" source="${source}" target="${target}">
+			<src path="src" />
+			<classpath refid="Web App Libraries.libraryclasspath" />
+		</javac>
+	</target>
+	<target depends="build" name="buildTest">
+		<echo message="${ant.project.name}: ${ant.file}" />
+		<javac debug="true" debuglevel="${debuglevel}" destdir="${test.classes.dir}" includeantruntime="false" source="${source}" target="${target}">
+			<src path="test/src" />
+			<classpath refid="CMS.test.classpath" />
+		</javac>
+	</target>
+	<target depends="buildTest" name="IntegrationTest">
+		<mkdir dir="${junit.output.dir}" />
+		<junit fork="yes" printsummary="withOutAndErr">
+			<formatter type="xml" />
+			<test name="integration.test.org.ukiuni.report.AllTests" todir="${junit.output.dir}" />
+			<classpath refid="CMS.test.classpath" />
+		</junit>
+	</target>
+	<target depends="buildTest" name="UnitTest">
+		<mkdir dir="${junit.output.dir}" />
+		<junit fork="yes" printsummary="withOutAndErr">
+			<formatter type="xml" />
+			<test name="test.org.ukiuni.report.service.AllTests" todir="${junit.output.dir}" />
+			<classpath refid="CMS.test.classpath" />
+		</junit>
+	</target>
+	<target depends="buildTest" name="AllTests">
+		<mkdir dir="${junit.output.dir}" />
+		<junit fork="yes" printsummary="withOutAndErr">
+			<formatter type="xml" />
+			<test name="AllTests" todir="${junit.output.dir}" />
+			<classpath refid="CMS.test.classpath" />
+		</junit>
+	</target>
+	<target name="junitreport">
+		<junitreport todir="${junit.output.dir}">
+			<fileset dir="${junit.output.dir}">
+				<include name="TEST-*.xml" />
+			</fileset>
+			<report format="frames" todir="${junit.output.dir}" />
+		</junitreport>
+	</target>
+	<target depends="build" name="makeWar">
+		<jar destfile="build/cms.war" basedir="WebContent" />
+	</target>
+</project>
