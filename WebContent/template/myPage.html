@@ -38,8 +38,58 @@
 					<span class="animate-switch label label-primary" ng-switch-when="published" ng-click="showPublishedReport(report, $event)">published</span> <span class="animate-switch label label-default" ng-switch-when="draft">Draft</span> <span class="animate-switch label label-default" ng-switch-when="private">Private</span> <span class="animate-switch label label-default" ng-switch-default>Draft</span>
 				</div>
 			</div>
-			</tab>
-			 <tab heading="News"></tab> </tabset>
+			</tab> <tab heading="News" id="newsTabHeader">
+			<div class="row clickable news" ng-repeat="news in newses">
+				<div ng-show="'EVENT_FOLLOW' == news.event">
+					<div style="margin-left: 15px; padding: 0; float: left">
+						<div class="iconWrapMicro" style="padding: 0; float: left;">
+							<img ng-src="{{news.accountIconUrl}}" alt="{{news.accountName}}" />
+						</div>
+						<h4 style="margin-left: 10px; padding: 0; float: left; padding-top: 3px;">{{"news.follow"|translate:news}}</h4>
+						<br style="clear: both" />
+					</div>
+					<div style="float: right;" ng-show="loginAccount.id == comment.commenter.id">
+						<span class="glyphicon glyphicon-pencil clickable" style="margin-left: 10px" ng-click="openEvent(event)"></span> <span class="glyphicon glyphicon-remove-circle clickable" style="margin-left: 10px" ng-click="openDeleteCommentDialog(comment)"></span>
+					</div>
+					<div style="float: right">{{news.createdAt | date:"yyyy/MM/dd HH:mm"}}</div>
+					<br style="clear: both" />
+				</div>
+				<div ng-show="'EVENT_FOLD' == news.event">
+					<div style="margin-left: 15px; padding: 0; float: left">
+						<div>
+							{{"news.fold.read"|translate:news}}
+						</div>
+						<div class="iconWrapMicro" style="padding: 0; float: left;">
+							<img ng-src="{{news.accountIconUrl}}" alt="{{news.accountName}}" />
+						</div>
+						<h4 style="margin-left: 10px; padding: 0; float: left; padding-top: 3px;">{{"news.fold.report"|translate:news}}</h4>
+						<br style="clear: both" />
+					</div>
+					<div style="float: right;" ng-show="loginAccount.id == comment.commenter.id">
+						<span class="glyphicon glyphicon-pencil clickable" style="margin-left: 10px" ng-click="openEvent(event)"></span> <span class="glyphicon glyphicon-remove-circle clickable" style="margin-left: 10px" ng-click="openDeleteCommentDialog(comment)"></span>
+					</div>
+					<div style="float: right">{{news.createdAt | date:"yyyy/MM/dd HH:mm"}}</div>
+					<br style="clear: both" />
+				</div>
+				<div ng-show="'EVENT_REPORT' == news.event">
+					<div style="margin-left: 15px; padding: 0; float: left">
+						<div>
+							{{"news.report.read"|translate:news}}
+						</div>
+						<div class="iconWrapMicro" style="padding: 0; float: left;">
+							<img ng-src="{{news.accountIconUrl}}" alt="{{news.accountName}}" />
+						</div>
+						<h4 style="margin-left: 10px; padding: 0; float: left; padding-top: 3px;">{{"news.report.report"|translate:news}}</h4>
+						<br style="clear: both" />
+					</div>
+					<div style="float: right;" ng-show="loginAccount.id == comment.commenter.id">
+						<span class="glyphicon glyphicon-pencil clickable" style="margin-left: 10px" ng-click="openEvent(event)"></span> <span class="glyphicon glyphicon-remove-circle clickable" style="margin-left: 10px" ng-click="openDeleteCommentDialog(comment)"></span>
+					</div>
+					<div style="float: right">{{news.createdAt | date:"yyyy/MM/dd HH:mm"}}</div>
+					<br style="clear: both" />
+				</div>
+			</div>
+			</tab> </tabset>
 		</div>
 	</div>
 </div>

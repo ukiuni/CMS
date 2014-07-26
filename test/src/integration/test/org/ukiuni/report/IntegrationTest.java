@@ -359,11 +359,8 @@ public class IntegrationTest {
 		driver.get(url());
 		login("myName", "myPassword");
 		waitForMyPage();
-		while (driver.findElements(By.className("reportRow")).size() < 5) {
-			sleep(1000);
-		}
-		driver.findElements(By.className("reportRow")).get(3).findElement(By.className("label")).click();
 
+		driver.get(url("report?key=e8fea4ff-e624-40b1-bf9d-357cead00f82"));
 		waitForContentPage();
 
 		WebElement foldButton = null;
@@ -499,13 +496,13 @@ public class IntegrationTest {
 		click("Update");
 		assertEquals(commentSize, driver.findElements(By.className("message")).size());
 	}
-	
+
 	@Test
 	public void testFollow() {
 		driver.get(url());
 		login("myName", "myPassword");
 		waitForMyPage();
-		
+
 		driver.get(url("report?key=e8fea4ff-e624-40b1-bf9d-357cead00f82"));
 		waitForContentPage();
 
@@ -530,6 +527,21 @@ public class IntegrationTest {
 		}
 		button.click();
 		waitForElementByClassNameAndValue("btn", "Follow");
+	}
+
+	@Test
+	public void testNews() throws InterruptedException {
+		driver.get(url());
+		waitForTopPage();
+		login("myName", "myPassword");
+		waitForMyPage();
+		driver.findElement(By.id("newsTabHeader")).findElement(By.tagName("a")).click();
+		waitForElement(By.className("news"));
+		List<WebElement> newsElements = driver.findElements(By.className("news"));
+		assertEquals(3, newsElements.size());
+		for (WebElement webElement : newsElements) {
+			assertTrue("news is unvisible", webElement.isDisplayed());
+		}
 	}
 
 	private void login(String name, String password) {
@@ -598,12 +610,12 @@ public class IntegrationTest {
 	}
 
 	@SuppressWarnings("unchecked")
-	private void waitForElementById(final String id) {
+	private void waitForElement(final By by) {
 		waitFor(driver, new Function<WebDriver, Boolean>() {
 			@Override
 			public Boolean apply(WebDriver driver) {
 				try {
-					List<WebElement> elements = driver.findElements(By.id(id));
+					List<WebElement> elements = driver.findElements(by);
 					for (WebElement element : elements) {
 						if (null != (element) && element.isDisplayed()) {
 							return true;
@@ -615,6 +627,10 @@ public class IntegrationTest {
 				return false;
 			}
 		});
+	}
+
+	private void waitForElementById(final String id) {
+		waitForElement(By.id(id));
 	}
 
 	@SuppressWarnings("unchecked")

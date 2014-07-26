@@ -6,5 +6,16 @@
 	},
 	"error":{
 		"login":"Login error. Name or Password is not match."
+	},
+	"news":{
+		"follow":"{{accountName}} follow {{targetAccountName}}",
+		"fold":{
+			"read":"{{accountName}} fold the report.",
+			"report":"title:{{targetReportTitle}}"
+		},
+		"report":{
+			"read":"{{accountName}} published the report.",
+			"report":"title:{{targetReportTitle}}"
+		}
 	}
 }

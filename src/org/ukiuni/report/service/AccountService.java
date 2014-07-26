@@ -87,6 +87,9 @@ public class AccountService {
 		if (followed) {
 			return;
 		}
+		if(targetAccountId == account.getId()){
+			throw new IllegalArgumentException();
+		}
 		Follow follow = new Follow();
 		follow.setFollower(account);
 		follow.setFollows(targetAccount);

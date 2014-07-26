@@ -1,6 +1,8 @@
 package org.ukiuni.report.util;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -11,6 +13,9 @@ import javax.persistence.EntityTransaction;
 import javax.persistence.LockModeType;
 import javax.persistence.NoResultException;
 import javax.persistence.Persistence;
+import javax.persistence.Query;
+import javax.persistence.TemporalType;
+import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
@@ -23,8 +28,8 @@ import org.ukiuni.report.util.DBUtil.WhereCondition.Match;
 import org.ukiuni.report.util.DBUtil.WhereCondition.Rule;
 
 public class DBUtil {
-	public static String SYSTEM_ENV_FACTORYNAME_POSTFIX = "org.ukiuni.db.factoryName.postfix";
-	private static Map<String, EntityManagerFactory> openedFactoryMap = new HashMap<String, EntityManagerFactory>();
+	public static final String SYSTEM_ENV_FACTORYNAME_POSTFIX = "org.ukiuni.db.factoryName.postfix";
+	private static final Map<String, EntityManagerFactory> openedFactoryMap = new HashMap<String, EntityManagerFactory>();
 	private EntityManagerFactory factory;
 
 	public static DBUtil create(String factoryName) {
@@ -34,11 +39,12 @@ public class DBUtil {
 	}
 
 	public void init(String factoryName) {
+		String postfix = System.getProperty(SYSTEM_ENV_FACTORYNAME_POSTFIX, "");
+		factoryName = factoryName + postfix;
 		if (!openedFactoryMap.containsKey(factoryName)) {
 			synchronized (DBUtil.class) {
 				if (!openedFactoryMap.containsKey(factoryName)) {
-					String postfix = System.getProperty(SYSTEM_ENV_FACTORYNAME_POSTFIX, "");
-					EntityManagerFactory factory = createEntityManagerFactory(factoryName + postfix);
+					EntityManagerFactory factory = createEntityManagerFactory(factoryName);
 					if (null == factory) {
 						throw new IllegalArgumentException("factoryName [\"" + factoryName + "\"] cant be created.");
 					}
@@ -199,6 +205,49 @@ public class DBUtil {
 
 		};
 		return execute(work);
+	}
+
+	public List<Object[]> findListWithNativeQuery(final String nativeQuery, final Object... params) {
+		Work<List<Object[]>> query = new Work<List<Object[]>>() {
+			@SuppressWarnings("unchecked")
+			public List<Object[]> execute(EntityManager em) {
+				Query cb = em.createNativeQuery(nativeQuery);
+				attachParameterToQuery(cb, params);
+				return cb.getResultList();
+			}
+		};
+		List<Object[]> objectList = execute(query);
+		for (Object[] datas : objectList) {
+			for (int i = 0; i < datas.length; i++) {
+				if (null != datas[i] && datas[i] instanceof Timestamp) {
+					Timestamp timestamp = ((Timestamp) datas[i]);
+					datas[i] = new Date(timestamp.getTime());
+				}
+			}
+		}
+		return objectList;
+	}
+
+
+	private <T> void attachParameterToQuery(Query cb, Object... params) {
+		for (int i = 0; i < params.length; i++) {
+			if (params[i] instanceof Date) {
+				cb.setParameter(i + 1, (Date) params[i], TemporalType.TIMESTAMP);
+			} else {
+				cb.setParameter(i + 1, params[i]);
+			}
+		}
+	}
+
+	public <T> List<T> findListWithQuery(final Class<T> clazz, final String nativeQuery, final Map<String, Object> params) {
+		Work<List<T>> query = new Work<List<T>>() {
+			public List<T> execute(EntityManager em) {
+				TypedQuery<T> cb = em.createQuery(nativeQuery, clazz);
+				attachParameterToQuery(cb, params);
+				return cb.getResultList();
+			}
+		};
+		return execute(query);
 	}
 
 	public <T> List<T> findList(final Class<T> clazz, final WhereCondition[] whereConditions, final Order... orders) {

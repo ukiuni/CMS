@@ -224,9 +224,6 @@ public class ReportAction {
 		if (null == report) {
 			throw new NotFoundException("report not found");
 		}
-		if (report.getAccount().getId() != account.getId()) {
-			throw new BadRequestException("this report is not yours");
-		}
 		reportService.fold(account, report);
 	}
 
@@ -242,9 +239,6 @@ public class ReportAction {
 		Report report = reportService.findByKey(reportKey);
 		if (null == report) {
 			throw new NotFoundException("report not found");
-		}
-		if (report.getAccount().getId() != account.getId()) {
-			throw new BadRequestException("this report is not yours");
 		}
 		reportService.unfold(account, report);
 	}

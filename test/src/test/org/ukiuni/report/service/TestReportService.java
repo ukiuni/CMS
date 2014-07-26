@@ -64,7 +64,7 @@ public class TestReportService {
 		Account account = accountService.findByName(name);
 
 		List<Report> reports = reportService.findByAccount(account);
-		assertEquals(10, reports.size());
+		assertEquals(8, reports.size());
 		for (Report report : reports) {
 			assertEquals(name, report.getAccount().getName());
 			assertNotNull("key is not loaded", report.getKey());
