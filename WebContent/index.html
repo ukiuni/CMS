@@ -187,6 +187,17 @@
 			}).error(function(e) {
 				console.log("error" + e);
 			});
+			$http.get("api/news", {
+				params : {
+					accessKey : $rootScope.loginAccount.accessKey
+				}
+			}).success(function(data) {
+				console.log(JSON.stringify(data));
+				console.log("data = "+data.length)
+				$scope.newses = data;
+			}).error(function(e) {
+				console.log("error" + e);
+			});
 			$scope.createReport = function() {
 				for ( var i in $location.search()) {
 					$location.search(i, null)

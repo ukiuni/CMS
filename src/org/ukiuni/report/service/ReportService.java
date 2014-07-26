@@ -67,6 +67,7 @@ public class ReportService {
 		fold.setAccount(account);
 		fold.setReportKey(report.getKey());
 		fold.setStatus(Fold.STATUS_CREATED);
+		fold.setCreatedAt(new Date());
 		dbUtil.persist(fold);
 	}
 
@@ -74,6 +75,7 @@ public class ReportService {
 		List<Fold> folds = findFolds(account, report);
 		for (Fold fold : folds) {
 			fold.setStatus(Fold.STATUS_DELETED);
+			fold.setUpdatedAt(new Date());
 			dbUtil.update(fold.getId(), fold);
 		}
 	}

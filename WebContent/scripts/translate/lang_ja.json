@@ -5,6 +5,17 @@
 		"description":"AngularJSでも、簡単に国際化対応ができます。"
 	},
 	"error":{
-		"login":"Login error. Name or Password is not match."
+		"login":"ログインに失敗しました。名前かパスワードが違います。"
+	},
+	"news":{
+		"follow":"{{accountName}} が {{targetAccountName}} をフォローしました。",
+		"fold":{
+			"read":"{{accountName}} が レポートをFoldしました。",
+			"report":"タイトル:{{targetReportTitle}}"
+		},
+		"report":{
+			"read":"{{accountName}} が レポートを公開しました。",
+			"report":"タイトル:{{targetReportTitle}}"
+		}
 	}
 }
