@@ -3,6 +3,7 @@ package org.ukiuni.report.service;
 import java.security.MessageDigest;
 import java.util.Date;
 import java.util.List;
+import java.util.Random;
 import java.util.UUID;
 
 import javax.persistence.EntityManager;
@@ -21,6 +22,7 @@ import org.ukiuni.report.util.DBUtil.Work;
 
 public class AccountService {
 	public DBUtil dbUtil = DBUtil.create("org.ukiuni.report");
+	public static String[] defaultImages = new String[] { "images/defaultIcon1.png", "images/defaultIcon2.png", "images/defaultIcon3.png" };
 
 	public Account create(String name, String mail, String password) {
 		Account account = new Account();
@@ -32,6 +34,7 @@ public class AccountService {
 			throw new RuntimeException(e);
 		}
 		account.setCreatedAt(new Date());
+		account.setIconUrl(defaultImages[new Random().nextInt(defaultImages.length)]);
 		dbUtil.persist(account);
 		return account;
 	}
@@ -87,7 +90,7 @@ public class AccountService {
 		if (followed) {
 			return;
 		}
-		if(targetAccountId == account.getId()){
+		if (targetAccountId == account.getId()) {
 			throw new IllegalArgumentException();
 		}
 		Follow follow = new Follow();
