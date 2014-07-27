@@ -40,6 +40,12 @@ public class DBUtil {
 
 	public void init(String factoryName) {
 		String postfix = System.getProperty(SYSTEM_ENV_FACTORYNAME_POSTFIX, "");
+		if ("".equals(postfix)) {
+			String systemPostfix = System.getenv(SYSTEM_ENV_FACTORYNAME_POSTFIX);
+			if (null != systemPostfix) {
+				postfix = systemPostfix;
+			}
+		}
 		factoryName = factoryName + postfix;
 		if (!openedFactoryMap.containsKey(factoryName)) {
 			synchronized (DBUtil.class) {
@@ -227,7 +233,6 @@ public class DBUtil {
 		}
 		return objectList;
 	}
-
 
 	private <T> void attachParameterToQuery(Query cb, Object... params) {
 		for (int i = 0; i < params.length; i++) {

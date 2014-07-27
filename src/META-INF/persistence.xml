@@ -57,4 +57,22 @@
 			<property name="eclipselink.logging.parameters" value="true" />
 		</properties>
 	</persistence-unit>
+	<persistence-unit name="org.ukiuni.report.cloudbees"
+		transaction-type="RESOURCE_LOCAL">
+		<exclude-unlisted-classes>false</exclude-unlisted-classes>
+		<properties>
+			<property name="eclipselink.canonicalmodel.subpackage" value="cloudbees" />
+			<property name="javax.persistence.jdbc.driver" value="org.h2.Driver" />
+			<property name="javax.persistence.jdbc.url" value="jdbc:h2:file:~/cms.db" />
+			<property name="javax.persistence.jdbc.user" value="test" />
+			<property name="javax.persistence.jdbc.password" value="test" />
+
+			<!-- EclipseLink にDDLを発行させるための設定です。 -->
+			<property name="eclipselink.ddl-generation" value="create-or-extend-tables" />
+			<property name="eclipselink.ddl-generation.output-mode"
+				value="database" />
+			<property name="eclipselink.logging.level.sql" value="FINE" />
+			<property name="eclipselink.logging.parameters" value="true" />
+		</properties>
+	</persistence-unit>
 </persistence> 
