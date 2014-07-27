@@ -106,12 +106,15 @@
 	</path>
 	<target name="init">
 		<mkdir dir="${classes.dir}" />
-		<mkdir dir="${test.classes.dir}" />
+		<mkdir dir="build" />
 		<copy includeemptydirs="false" todir="${classes.dir}">
 			<fileset dir="src">
 				<exclude name="**/*.java" />
 			</fileset>
 		</copy>
+	</target>
+	<target depends="init" name="initTest">
+		<mkdir dir="${test.classes.dir}" />
 		<copy includeemptydirs="false" todir="${test.classes.dir}">
 			<fileset dir="test/src">
 				<exclude name="**/*.java" />
@@ -129,7 +132,7 @@
 			<classpath refid="Web App Libraries.libraryclasspath" />
 		</javac>
 	</target>
-	<target depends="build" name="buildTest">
+	<target depends="build, initTest" name="buildTest">
 		<echo message="${ant.project.name}: ${ant.file}" />
 		<javac debug="true" debuglevel="${debuglevel}" destdir="${test.classes.dir}" includeantruntime="false" source="${source}" target="${target}">
 			<src path="test/src" />
