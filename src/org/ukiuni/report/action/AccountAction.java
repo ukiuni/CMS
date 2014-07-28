@@ -8,6 +8,11 @@ import java.io.UnsupportedEncodingException;
 import java.lang.reflect.InvocationTargetException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
@@ -33,17 +38,23 @@ import org.apache.commons.beanutils.BeanUtils;
 import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
 import org.glassfish.jersey.media.multipart.FormDataParam;
 import org.ukiuni.report.ResponseServerStatusException;
+import org.ukiuni.report.action.ReportAction.ReportDto;
+import org.ukiuni.report.action.ReportAction.ReporterDto;
 import org.ukiuni.report.entity.Account;
 import org.ukiuni.report.entity.AccountAccessKey;
+import org.ukiuni.report.entity.Fold;
 import org.ukiuni.report.entity.IconImage;
+import org.ukiuni.report.entity.Report;
 import org.ukiuni.report.service.AccountService;
 import org.ukiuni.report.service.IconImageService;
+import org.ukiuni.report.service.ReportService;
 
 @Path("account")
 public class AccountAction {
 	private static final long IMAGE_ICON_SOURCE_MAX_SIZE = 10000000;
 	public AccountService accountService = new AccountService();
 	public IconImageService iconImageService = new IconImageService();
+	public ReportService reportService = new ReportService();
 
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
@@ -82,6 +93,7 @@ public class AccountAction {
 
 	@GET
 	@Path("loadByAccessKey")
+	@Produces(MediaType.APPLICATION_JSON)
 	public AccountDto loadByAccessKey(@QueryParam("accessKey") String accessKey) throws IllegalAccessException, InvocationTargetException {
 		Account account = accountService.findByAccessKey(accessKey);
 		if (account == null) {
@@ -123,7 +135,7 @@ public class AccountAction {
 		IconImage iconImage = iconImageService.regist(account, file);
 		return iconImage.getKey();
 	}
-	
+
 	@POST
 	@Path("/follow")
 	@Consumes(MediaType.APPLICATION_JSON)
@@ -135,7 +147,7 @@ public class AccountAction {
 		}
 		accountService.follow(account, follow.getTargetAccountId());
 	}
-	
+
 	@PUT
 	@Path("/unfollow")
 	@Consumes(MediaType.APPLICATION_JSON)
@@ -163,6 +175,41 @@ public class AccountAction {
 				output.flush();
 			}
 		}).build();
+	}
+
+	@GET
+	@Path("fold")
+	@Produces(MediaType.APPLICATION_JSON)
+	public List<FoldDto> loadFold(@QueryParam("accessKey") String accessKey) {
+		Account account = accountService.findByAccessKey(accessKey);
+		if (null == account) {
+			throw new NotFoundException("account not found");
+		}
+		List<Fold> folds = accountService.findFolds(account);
+		List<FoldDto> returnDtoList = new LinkedList<FoldDto>();
+		List<Report> reportList = reportService.findReportsByFolds(folds);
+		Map<String, Report> reportKeyMap = new HashMap<String, Report>();
+		for (Report report : reportList) {
+			reportKeyMap.put(report.getKey(), report);
+		}
+		for (Fold fold : folds) {
+			Report report = reportKeyMap.get(fold.getReportKey());
+			if (null != report) {
+				ReportDto reportDto = new ReportDto();
+				try {
+					BeanUtils.copyProperties(reportDto, report);
+					ReporterDto reporterDto = new ReporterDto();
+					BeanUtils.copyProperties(reporterDto, report.getAccount());
+					reportDto.setReporter(reporterDto);
+					FoldDto foldDto = new FoldDto();
+					foldDto.setCreatedAt(fold.getCreatedAt());
+					foldDto.setReport(reportDto);
+					returnDtoList.add(0, foldDto);
+				} catch (Exception e) {
+				}
+			}
+		}
+		return returnDtoList;
 	}
 
 	public static class AccountDetailDto extends AccountDto {
@@ -297,6 +344,27 @@ public class AccountAction {
 
 		public void setAccountAccessKey(String accountAccessKey) {
 			this.accountAccessKey = accountAccessKey;
+		}
+	}
+
+	public class FoldDto {
+		private ReportDto report;
+		private Date createdAt;
+
+		public ReportDto getReport() {
+			return report;
+		}
+
+		public void setReport(ReportDto report) {
+			this.report = report;
+		}
+
+		public Date getCreatedAt() {
+			return createdAt;
+		}
+
+		public void setCreatedAt(Date createdAt) {
+			this.createdAt = createdAt;
 		}
 	}
 }

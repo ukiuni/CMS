@@ -247,9 +247,11 @@ public class DBUtil {
 	public <T> List<T> findListWithQuery(final Class<T> clazz, final String nativeQuery, final Map<String, Object> params) {
 		Work<List<T>> query = new Work<List<T>>() {
 			public List<T> execute(EntityManager em) {
-				TypedQuery<T> cb = em.createQuery(nativeQuery, clazz);
-				attachParameterToQuery(cb, params);
-				return cb.getResultList();
+				TypedQuery<T> query = em.createQuery(nativeQuery, clazz);
+				for (String key : params.keySet()) {
+					query.setParameter(key, params.get(key));
+				}
+				return query.getResultList();
 			}
 		};
 		return execute(query);

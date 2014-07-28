@@ -136,7 +136,6 @@
 			}
 			$location.path('/');
 		} ]);
-
 		myApp.controller("loginController", [ "$rootScope", "$scope", "$http", "$location", "$cookies", "$translate", function($rootScope, $scope, $http, $location, $cookies, $translate) {
 			$scope.tryLoginAccount = {};
 			$scope.newAccount = {};
@@ -187,13 +186,20 @@
 			}).error(function(e) {
 				console.log("error" + e);
 			});
+			$http.get("api/account/fold", {
+				params : {
+					accessKey : $rootScope.loginAccount.accessKey
+				}
+			}).success(function(data) {
+				$scope.folds = data;
+			}).error(function(e) {
+				console.log("error" + e);
+			});
 			$http.get("api/news", {
 				params : {
 					accessKey : $rootScope.loginAccount.accessKey
 				}
 			}).success(function(data) {
-				console.log(JSON.stringify(data));
-				console.log("data = "+data.length)
 				$scope.newses = data;
 			}).error(function(e) {
 				console.log("error" + e);

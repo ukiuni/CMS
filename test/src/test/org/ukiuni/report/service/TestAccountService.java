@@ -173,7 +173,7 @@ public class TestAccountService {
 
 		assertEquals(followersCount + 1, follower.size());
 	}
-	
+
 	@Test
 	public void testUnfollow() {
 		DBTestUtil.setUpDbWithXML(DBTestUtil.MODE_UNIT_TEST, "basicData.xml");
@@ -187,7 +187,7 @@ public class TestAccountService {
 
 		assertEquals(followersCount - 1, follower.size());
 	}
-	
+
 	@Test
 	public void testfollowing() {
 		DBTestUtil.setUpDbWithXML(DBTestUtil.MODE_UNIT_TEST, "basicData.xml");
@@ -196,8 +196,18 @@ public class TestAccountService {
 		Account account = accountService.findByName("myName");
 		Account account2 = accountService.findByName("myName2");
 		Account account3 = accountService.findByName("myName3");
-		
+
 		assertTrue("shuld be follow", accountService.following(account, account3));
 		assertFalse("shuld not be follow", accountService.following(account, account2));
+	}
+
+	@Test
+	public void testloadFold() {
+		DBTestUtil.setUpDbWithXML(DBTestUtil.MODE_UNIT_TEST, "basicData.xml");
+		AccountService accountService = new AccountService();
+		accountService.dbUtil = DBUtil.create(DB_FACTORY_NAME);
+		Account account = accountService.findByName("myName");
+		List<Fold> folds = accountService.findFolds(account);
+		assertEquals(1, folds.size());
 	}
 }

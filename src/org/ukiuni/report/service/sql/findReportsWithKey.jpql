@@ -1,0 +1,1 @@
+select r from Report r where r.key in :reportKeys and r.status = 'published' order by r.createdAt desc

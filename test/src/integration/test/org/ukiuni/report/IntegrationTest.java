@@ -530,7 +530,7 @@ public class IntegrationTest {
 	}
 
 	@Test
-	public void testNews() throws InterruptedException {
+	public void testShowNewsTab() throws InterruptedException {
 		driver.get(url());
 		waitForTopPage();
 		login("myName", "myPassword");
@@ -541,6 +541,21 @@ public class IntegrationTest {
 		assertEquals(3, newsElements.size());
 		for (WebElement webElement : newsElements) {
 			assertTrue("news is unvisible", webElement.isDisplayed());
+		}
+	}
+
+	@Test
+	public void testShowFoldTab() throws InterruptedException {
+		driver.get(url());
+		waitForTopPage();
+		login("myName", "myPassword");
+		waitForMyPage();
+		driver.findElement(By.id("foldsTabHeader")).findElement(By.tagName("a")).click();
+		waitForElement(By.className("myfold"));
+		List<WebElement> newsElements = driver.findElements(By.className("myfold"));
+		assertEquals(1, newsElements.size());
+		for (WebElement webElement : newsElements) {
+			assertTrue("myFold is unvisible", webElement.isDisplayed());
 		}
 	}
 

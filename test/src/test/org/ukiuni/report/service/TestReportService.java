@@ -5,6 +5,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.After;
@@ -287,5 +288,29 @@ public class TestReportService {
 		List<Fold> folds = reportService.findFolds(reportKey);
 
 		assertEquals(1, folds.size());
+	}
+
+	@Test
+	public void testFindReportsByKey() {
+		DBTestUtil.setUpDbWithXML(DBTestUtil.MODE_UNIT_TEST, "basicData.xml");
+		ReportService reportService = new ReportService();
+		reportService.dbUtil = DBUtil.create(DB_FACTORY_NAME);
+
+		List<Fold> keys = new ArrayList<Fold>();
+		{
+			Fold fold = new Fold();
+			fold.setReportKey("b564857c-b762-4eaf-a95e-299fa41e25b9");
+			keys.add(fold);
+		}
+		{
+			Fold fold = new Fold();
+			fold.setReportKey("e8fea4ff-e624-40b1-bf9d-357cead00f82");
+			keys.add(fold);
+		}
+
+		List<Report> reports = reportService.findReportsByFolds(keys);
+		assertEquals(2, reports.size());
+		assertNotNull("Report does not have Account", reports.get(0).getAccount());
+		assertEquals("myName", reports.get(1).getAccount().getName());
 	}
 }

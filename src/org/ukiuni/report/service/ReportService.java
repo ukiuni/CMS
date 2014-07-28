@@ -1,7 +1,10 @@
 package org.ukiuni.report.service;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import org.ukiuni.report.entity.Account;
@@ -13,6 +16,7 @@ import org.ukiuni.report.util.DBUtil;
 import org.ukiuni.report.util.DBUtil.Order.SequenceTo;
 import org.ukiuni.report.util.DBUtil.WhereCondition.Match;
 import org.ukiuni.report.util.DBUtil.WhereCondition.Rule;
+import org.ukiuni.report.util.StreamUtil;
 
 public class ReportService {
 	public DBUtil dbUtil = DBUtil.create("org.ukiuni.report");
@@ -124,5 +128,15 @@ public class ReportService {
 	public void deleteComment(Comment comment) {
 		comment.setStatus(Comment.STATUS_DELETED);
 		updateComment(comment);
+	}
+
+	public List<Report> findReportsByFolds(List<Fold> folds) {
+		List<String> reportKeyList = new ArrayList<String>();
+		for (Fold fold : folds) {
+			reportKeyList.add(fold.getReportKey());
+		}
+		Map<String, Object> params = new HashMap<String, Object>();
+		params.put("reportKeys", reportKeyList);
+		return dbUtil.findListWithQuery(Report.class, StreamUtil.toString(ReportService.class.getResourceAsStream("./sql/findReportsWithKey.jpql")), params);
 	}
 }
