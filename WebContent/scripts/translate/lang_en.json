@@ -5,7 +5,8 @@
 		"description":"Easy translate with AngularJS."
 	},
 	"error":{
-		"login":"Login error. Name or Password is not match."
+		"login":"Login error. Name or Password is not match.",
+		"createAccount":"Fail to create account. change name and/or mail."
 	},
 	"news":{
 		"follow":"{{accountName}} follow {{targetAccountName}}",

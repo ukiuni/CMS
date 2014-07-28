@@ -5,7 +5,8 @@
 		"description":"AngularJSでも、簡単に国際化対応ができます。"
 	},
 	"error":{
-		"login":"ログインに失敗しました。名前かパスワードが違います。"
+		"login":"ログインに失敗しました。名前かパスワードが違います。",
+		"createAccount":"アカウントの作成に失敗しました。名前かメールアドレスを変更してください。"
 	},
 	"news":{
 		"follow":"{{accountName}} が {{targetAccountName}} をフォローしました。",
