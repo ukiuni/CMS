@@ -121,6 +121,9 @@
 					}
 				}).success(function(account) {
 					$rootScope.loginAccount = account;
+					if ("/" == $location.path()) {
+						$location.path('/myPage');
+					}
 				}).error(function(e) {
 					$rootScope.logout();
 				});
