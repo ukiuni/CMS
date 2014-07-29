@@ -19,13 +19,13 @@ import javax.servlet.http.HttpServletRequest;
  * Servlet implementation class ShowIndexHTMLServlet
  */
 @WebFilter("/*")
-public class ShowIndexHTMLServlet implements Filter {
+public class ShowIndexHTMLFilter implements Filter {
 	private static final List<String> PUSH_STATE_LIST = new ArrayList<String>();
 
 	/**
 	 * @see HttpServlet#HttpServlet()
 	 */
-	public ShowIndexHTMLServlet() {
+	public ShowIndexHTMLFilter() {
 		super();
 	}
 
