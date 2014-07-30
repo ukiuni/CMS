@@ -14,7 +14,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.ws.rs.BadRequestException;
 import javax.ws.rs.Consumes;
@@ -48,6 +47,7 @@ import org.ukiuni.report.entity.Report;
 import org.ukiuni.report.service.AccountService;
 import org.ukiuni.report.service.IconImageService;
 import org.ukiuni.report.service.ReportService;
+import org.ukiuni.report.validation.Email;
 
 @Path("account")
 public class AccountAction {
@@ -213,9 +213,9 @@ public class AccountAction {
 	}
 
 	public static class AccountDetailDto extends AccountDto {
-		@NotNull
+		@Email
 		private String mail;
-		@NotNull
+		@Size(min = 4, max = 30, message = "An account's password must contain between 6 and 30 characters")
 		private String password;
 
 		public String getMail() {
@@ -237,11 +237,9 @@ public class AccountAction {
 
 	public static class AccountDto {
 		private long id;
-		@Size(min = 6, max = 20, message = "An event's name must contain between 6 and 1000 characters")
-		// TODO JSONだとvalidationが効かない
+		@Size(min = 4, max = 30, message = "An account's name must contain between 6 and 20 characters")
 		private String name;
 		private String fullName;
-		@NotNull
 		private String profile;
 		private String iconUrl;
 		private String accessKey;

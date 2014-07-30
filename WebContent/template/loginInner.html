@@ -5,7 +5,7 @@
 			<span class="input-group-addon">name</span> <input type="text" name="name" ng-model="tryLoginAccount.name" class="form-control" placeholder="Username">
 		</div>
 		<div class="text-danger" style="min-height: 10px">
-			<span ng-show="loginForm.name.$error.minlength || loginForm.name.$error.maxlength">name must be 10-20</span>
+			<span ng-show="loginForm.name.$error.minlength || loginForm.name.$error.maxlength">name must be 4-30</span>
 		</div>
 		<div class="input-group">
 			<span class="input-group-addon">password</span> <input type="password" name="password" ng-model="tryLoginAccount.password" class="form-control" placeholder="Username" required>
@@ -19,10 +19,10 @@
 	<h4>Create Account</h4>
 	<form class="form-inline" role="form" name="accountCreateForm">
 		<div class="input-group">
-			<span class="input-group-addon">name</span> <input type="text" name="name" class="form-control" placeholder="Name" ng-model="newAccount.name" ng-model-options="{ updateOn: 'blur' }" ng-minlength="4" ng-maxlength="20">
+			<span class="input-group-addon">name</span> <input type="text" name="name" class="form-control" placeholder="Name" ng-model="newAccount.name" ng-model-options="{ updateOn: 'blur' }" ng-minlength="4" ng-maxlength="30">
 		</div>
 		<div class="text-danger" style="min-height: 10px">
-			<span ng-show="accountCreateForm.name.$error.minlength || accountCreateForm.name.$error.maxlength">name must be 4-20</span>
+			<span ng-show="accountCreateForm.name.$error.minlength || accountCreateForm.name.$error.maxlength">name must be 4-30</span>
 		</div>
 		<div class="input-group">
 			<span class="input-group-addon">Mail</span> <input type="email" name="mail" class="form-control" placeholder="Mail" ng-model="newAccount.mail" required>
@@ -31,10 +31,10 @@
 			<span ng-show="accountCreateForm.mail.$error.email">input mail address</span>
 		</div>
 		<div class="input-group">
-			<span class="input-group-addon">password</span> <input type="password" name="password" class="form-control" placeholder="Password" ng-model="newAccount.password" required>
+			<span class="input-group-addon">password</span> <input type="password" name="password" class="form-control" placeholder="Password" ng-model="newAccount.password" required  ng-minlength="4" ng-maxlength="30">
 		</div>
 		<div class="text-danger" style="min-height: 10px">
-			<span ng-show="accountCreateForm.name.$error.minlength || accountCreateForm.name.$error.maxlength">password must be 6-20</span>
+			<span ng-show="accountCreateForm.name.$error.minlength || accountCreateForm.name.$error.maxlength">password must be 4-20</span>
 		</div>
 		<div align="right">
 			<a class="btn btn-primary" role="button" ng-click="createAccount()">new Account</a>

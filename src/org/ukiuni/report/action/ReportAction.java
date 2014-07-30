@@ -21,6 +21,7 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
 import org.apache.commons.beanutils.BeanUtils;
+import org.hibernate.validator.constraints.NotEmpty;
 import org.ukiuni.report.action.AccountAction.CommenterDto;
 import org.ukiuni.report.entity.Account;
 import org.ukiuni.report.entity.Comment;
@@ -382,6 +383,7 @@ public class ReportAction {
 		private long id;
 		private String accountAccessKey;
 		private String reportKey;
+		@NotEmpty
 		private String message;
 		private Date createdAt;
 		private CommenterDto commenter;
