@@ -17,7 +17,7 @@ import net.arnx.jsonic.JSON;
 @SuppressWarnings("rawtypes")
 @Provider
 @Produces(MediaType.APPLICATION_JSON)
-public class JSONProvider implements MessageBodyWriter {
+public class JSONWriter implements MessageBodyWriter {
 	@Override
 	public long getSize(Object arg0, Class arg1, Type arg2, Annotation[] arg3, MediaType arg4) {
 		try {
