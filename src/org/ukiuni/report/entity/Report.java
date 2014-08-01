@@ -28,7 +28,7 @@ public class Report {
 	private Account account;
 	private String title;
 	private String content;
-	@Column(nullable = false)
+	@Column(nullable = false, unique = true)
 	private String key;
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date createdAt;
