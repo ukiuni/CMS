@@ -36,6 +36,7 @@ import net.arnx.jsonic.util.Base64;
 import org.apache.commons.beanutils.BeanUtils;
 import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
 import org.glassfish.jersey.media.multipart.FormDataParam;
+import org.hibernate.validator.constraints.Email;
 import org.ukiuni.report.ResponseServerStatusException;
 import org.ukiuni.report.action.ReportAction.ReportDto;
 import org.ukiuni.report.action.ReportAction.ReporterDto;
@@ -47,7 +48,6 @@ import org.ukiuni.report.entity.Report;
 import org.ukiuni.report.service.AccountService;
 import org.ukiuni.report.service.IconImageService;
 import org.ukiuni.report.service.ReportService;
-import org.ukiuni.report.validation.Email;
 
 @Path("account")
 public class AccountAction {
