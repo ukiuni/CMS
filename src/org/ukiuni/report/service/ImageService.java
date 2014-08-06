@@ -8,10 +8,13 @@ import java.util.UUID;
 
 import org.ukiuni.report.entity.Account;
 import org.ukiuni.report.entity.IconImage;
+import org.ukiuni.report.entity.Report;
+import org.ukiuni.report.entity.ReportImage;
 import org.ukiuni.report.util.DBUtil;
 import org.ukiuni.report.util.ImageUtil;
+import org.ukiuni.report.util.StreamUtil;
 
-public class IconImageService {
+public class ImageService {
 	public DBUtil dbUtil = DBUtil.create("org.ukiuni.report");
 
 	public IconImage regist(Account register, InputStream in) throws IOException {
@@ -27,7 +30,22 @@ public class IconImageService {
 		return iconImage;
 	}
 
-	public IconImage loadByKey(String key) {
+	public IconImage loadIconByKey(String key) {
 		return dbUtil.findSingleEquals(IconImage.class, "key", key);
+	}
+
+	public ReportImage loadReportImageByKey(String key) {
+		return dbUtil.findSingleEquals(ReportImage.class, "key", key);
+	}
+
+	public ReportImage regist(Account register, Report report, InputStream in) throws IOException {
+		ReportImage reportImage = new ReportImage();
+		reportImage.setKey(UUID.randomUUID().toString());
+		reportImage.setReportKey(report.getKey());
+		reportImage.setRegister(register);
+		reportImage.setCreatedAt(new Date());
+		reportImage.setContent(StreamUtil.toByteArray(in));
+		dbUtil.persist(reportImage);
+		return reportImage;
 	}
 }

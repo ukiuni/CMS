@@ -18,5 +18,11 @@
 			"read":"{{accountName}} published the report.",
 			"report":"title:{{targetReportTitle}}"
 		}
+	},
+	"report":{
+		"image":{
+			"select":"upload image",
+			"drop":"drop file here"
+		}
 	}
 }

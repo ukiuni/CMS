@@ -4,7 +4,7 @@ myApp.controller("editProfileController", [ "$rootScope", "$scope", "$http", "$l
 		return;
 	}
 	$scope.editingAccount = $rootScope.clone($rootScope.loginAccount);
-	$scope.onIconImageSelect = function($file) {
+	$scope.onIconImageSelected = function($file) {
 		(function() {
 			var value = $upload.upload({
 				url : "api/account/registImage",
@@ -20,7 +20,6 @@ myApp.controller("editProfileController", [ "$rootScope", "$scope", "$http", "$l
 			}).error(function(data, status, headers, config) {
 				console.log("uploadFailed = " + data);
 			});
-			console.log("uploaded = " + value);
 		})();
 	}
 	$scope.cancel = function(action) {

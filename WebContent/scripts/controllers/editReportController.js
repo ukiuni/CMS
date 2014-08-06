@@ -1,4 +1,4 @@
-myApp.controller("editReportController", [ "$rootScope", "$scope", "$http", "$location", "$modal", function($rootScope, $scope, $http, $location, $modal) {
+myApp.controller("editReportController", [ "$rootScope", "$scope", "$http", "$location", "$modal", "$upload", function($rootScope, $scope, $http, $location, $modal, $upload) {
 	if (!$rootScope.loginAccount) {
 		$location.path('/login');
 		return;
@@ -107,4 +107,30 @@ myApp.controller("editReportController", [ "$rootScope", "$scope", "$http", "$lo
 			console.log("e");
 		});
 	};
+	$scope.onImageSelected = function($file) {
+		(function() {
+			var value = $upload.upload({
+				url : "api/report/registImage",
+				method : "POST",
+				data : {
+					accountAccessKey : $rootScope.loginAccount.accessKey,
+					reportKey : $scope.report.key
+				},
+				file : $file
+			}).progress(function(evt) {
+				console.log('percent: ' + parseInt(100.0 * evt.loaded / evt.total));
+			}).success(function(imageKey, status, headers, config) {
+				var imageUrl = "![](api/report/image/" + imageKey + ")";
+				var insertIndex = document.getElementById('reportTextArea').selectionStart;
+				if (insertIndex) {
+					$scope.report.content = $scope.report.content.substring(0, insertIndex) + imageUrl + $scope.report.content.substring(insertIndex);
+				} else {
+					$scope.report.content = $scope.report.content + "\n" + imageUrl;
+				}
+				document.getElementById('imageInput').value = null;
+			}).error(function(data, status, headers, config) {
+				console.log("uploadFailed = " + data);
+			});
+		})();
+	}
 } ]);

@@ -28,7 +28,6 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.StreamingOutput;
 
 import net.arnx.jsonic.util.Base64;
@@ -46,14 +45,14 @@ import org.ukiuni.report.entity.Fold;
 import org.ukiuni.report.entity.IconImage;
 import org.ukiuni.report.entity.Report;
 import org.ukiuni.report.service.AccountService;
-import org.ukiuni.report.service.IconImageService;
+import org.ukiuni.report.service.ImageService;
 import org.ukiuni.report.service.ReportService;
 
 @Path("account")
 public class AccountAction {
 	private static final long IMAGE_ICON_SOURCE_MAX_SIZE = 10000000;
 	public AccountService accountService = new AccountService();
-	public IconImageService iconImageService = new IconImageService();
+	public ImageService imageService = new ImageService();
 	public ReportService reportService = new ReportService();
 
 	@POST
@@ -132,7 +131,7 @@ public class AccountAction {
 		if (null == account) {
 			throw new NotFoundException("account not found");
 		}
-		IconImage iconImage = iconImageService.regist(account, file);
+		IconImage iconImage = imageService.regist(account, file);
 		return iconImage.getKey();
 	}
 
@@ -164,9 +163,9 @@ public class AccountAction {
 	@Path("/icon/{imageKey}")
 	@Produces("image/png")
 	public Response icon(@PathParam("imageKey") final String imageKey) {
-		final IconImage iconImage = iconImageService.loadByKey(imageKey);
+		final IconImage iconImage = imageService.loadIconByKey(imageKey);
 		if (null == iconImage) {
-			return Response.status(Status.NOT_FOUND).build();
+			throw new NotFoundException("image not found");
 		}
 		return Response.ok().entity(new StreamingOutput() {
 			@Override

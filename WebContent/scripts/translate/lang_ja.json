@@ -18,5 +18,11 @@
 			"read":"{{accountName}} が レポートを公開しました。",
 			"report":"タイトル:{{targetReportTitle}}"
 		}
+	},
+	"report":{
+		"image":{
+			"select":"画像をアップロード",
+			"drop":"ファイルをここにドロップ"
+		}
 	}
 }

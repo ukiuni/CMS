@@ -1,5 +1,8 @@
 package org.ukiuni.report.action;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Date;
@@ -18,21 +21,30 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.StreamingOutput;
 
 import org.apache.commons.beanutils.BeanUtils;
+import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
+import org.glassfish.jersey.media.multipart.FormDataParam;
 import org.hibernate.validator.constraints.NotEmpty;
 import org.ukiuni.report.action.AccountAction.CommenterDto;
 import org.ukiuni.report.entity.Account;
 import org.ukiuni.report.entity.Comment;
 import org.ukiuni.report.entity.Report;
+import org.ukiuni.report.entity.ReportImage;
 import org.ukiuni.report.service.AccountService;
+import org.ukiuni.report.service.ImageService;
 import org.ukiuni.report.service.ReportService;
 
 @Path("/report")
 public class ReportAction {
+	private static final long IMAGE_SOURCE_MAX_SIZE = 10000000;
 	public AccountService accountService = new AccountService();
 	public ReportService reportService = new ReportService();
+	public ImageService imageService = new ImageService();
 
 	@GET
 	@Path("loadByAccessKey")
@@ -242,6 +254,44 @@ public class ReportAction {
 			throw new NotFoundException("report not found");
 		}
 		reportService.unfold(account, report);
+	}
+
+	@POST
+	@Path("/registImage")
+	@Consumes(MediaType.MULTIPART_FORM_DATA)
+	@Produces(MediaType.TEXT_PLAIN)
+	public String regist(@FormDataParam("file") InputStream file, @FormDataParam("file") FormDataContentDisposition fileDisposition, @FormDataParam("accountAccessKey") String accountAccessKey, @FormDataParam("reportKey") String reportKey) throws IOException {
+		if (fileDisposition.getSize() > IMAGE_SOURCE_MAX_SIZE) {
+			throw new BadRequestException("image is too large");
+		}
+		if (null == reportKey) {
+			throw new BadRequestException("report key must be specified");
+		}
+		Report report = reportService.findByKey(reportKey);
+		if (null == report) {
+			throw new BadRequestException("report not found");
+		}
+		Account account = checkAccessible(accountAccessKey, report);
+
+		ReportImage reportImage = imageService.regist(account, report, file);
+		return reportImage.getKey();
+	}
+
+	@GET
+	@Path("/image/{imageKey}")
+	@Produces("image/png")
+	public Response icon(@PathParam("imageKey") final String imageKey) {
+		final ReportImage reportImage = imageService.loadReportImageByKey(imageKey);
+		if (null == reportImage) {
+			throw new NotFoundException("image not found");
+		}
+		return Response.ok().entity(new StreamingOutput() {
+			@Override
+			public void write(OutputStream output) throws IOException, WebApplicationException {
+				output.write(reportImage.getContent());
+				output.flush();
+			}
+		}).build();
 	}
 
 	public static class ReporterDto {

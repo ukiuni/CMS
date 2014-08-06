@@ -72,6 +72,10 @@
 	padding: 6px;
 	border: 1px solid #ccc;
 }
+
+.reportArea img {
+	max-width: 100%;
+}
 /*report css end*/
 
 /* callout */
