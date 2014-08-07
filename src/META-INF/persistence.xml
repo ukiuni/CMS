@@ -75,4 +75,40 @@
 			<property name="eclipselink.logging.parameters" value="true" />
 		</properties>
 	</persistence-unit>
+	<persistence-unit name="org.ukiuni.report.heroku"
+		transaction-type="RESOURCE_LOCAL">
+		<exclude-unlisted-classes>false</exclude-unlisted-classes>
+		<properties>
+			<property name="eclipselink.canonicalmodel.subpackage" value="heroku" />
+			<property name="javax.persistence.jdbc.driver" value="org.postgresql.Driver" />
+			<property name="javax.persistence.jdbc.url" value="jdbc:postgresql://ec2-54-225-101-164.compute-1.amazonaws.com:5432/dfflqhjns5shc9" />
+			<property name="javax.persistence.jdbc.user" value="xvqradgcnnrnuo" />
+			<property name="javax.persistence.jdbc.password" value="Pq8pPBHkjZF5buKJcGCSMp3dzZ" />
+
+			<!-- EclipseLink にDDLを発行させるための設定です。 -->
+			<property name="eclipselink.ddl-generation" value="create-or-extend-tables" />
+			<property name="eclipselink.ddl-generation.output-mode"
+				value="database" />
+			<property name="eclipselink.logging.level.sql" value="FINE" />
+			<property name="eclipselink.logging.parameters" value="true" />
+		</properties>
+	</persistence-unit>
+	<persistence-unit name="org.ukiuni.report.postgres"
+		transaction-type="RESOURCE_LOCAL">
+		<exclude-unlisted-classes>false</exclude-unlisted-classes>
+		<properties>
+			<property name="eclipselink.canonicalmodel.subpackage" value="postgres" />
+			<property name="javax.persistence.jdbc.driver" value="org.postgresql.Driver" />
+			<property name="javax.persistence.jdbc.url" value="jdbc:postgresql://localhost:5432/mojacms" />
+			<property name="javax.persistence.jdbc.user" value="postgres" />
+			<property name="javax.persistence.jdbc.password" value="postgres" />
+
+			<!-- EclipseLink にDDLを発行させるための設定です。 -->
+			<property name="eclipselink.ddl-generation" value="create-or-extend-tables" />
+			<property name="eclipselink.ddl-generation.output-mode"
+				value="database" />
+			<property name="eclipselink.logging.level.sql" value="FINE" />
+			<property name="eclipselink.logging.parameters" value="true" />
+		</properties>
+	</persistence-unit>
 </persistence> 

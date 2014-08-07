@@ -19,7 +19,6 @@ public class IconImage {
 	private String key;
 	private Account register;
 	@Lob
-	@Column(columnDefinition = "BLOB NOT NULL")
 	private byte[] content;
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date createdAt;

@@ -1,0 +1,10 @@
+language: java
+jdk:
+ - oraclejdk7
+ant
+after_success:
+- wget -qO- https://toolbelt.heroku.com/install-ubuntu.sh | sh
+- heroku config:add java_opts='-Dorg.ukiuni.db.factoryName.postfix=heroku'
+- heroku config:set org.ukiuni.db.factoryName.postfix=.heroku --app modern-java-architecture-cms
+- heroku plugins:install https://github.com/heroku/heroku-deploy
+- heroku deploy:war --war build/cms.war --app modern-java-architecture-cms
