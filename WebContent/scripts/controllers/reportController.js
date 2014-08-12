@@ -1,4 +1,4 @@
-myApp.controller("reportController", [ "$rootScope", "$scope", "$http", "$location", "$modal", function($rootScope, $scope, $http, $location, $modal) {
+myApp.controller("reportController", [ "$rootScope", "$scope", "$http", "$location", "$modal", "$translate", function($rootScope, $scope, $http, $location, $modal, $translate) {
 	if (!$location.search()["key"]) {
 		return;
 	}
@@ -147,7 +147,7 @@ myApp.controller("reportController", [ "$rootScope", "$scope", "$http", "$locati
 		modalInstance.result.then(function(comment) {
 			$scope.deleteComment(comment);
 		}, function() {
-			//console.log('Modal dismissed at: ' + new Date());
+			// console.log('Modal dismissed at: ' + new Date());
 		});
 	}
 	$scope.openEditCommentDialog = function(comment) {
@@ -169,7 +169,7 @@ myApp.controller("reportController", [ "$rootScope", "$scope", "$http", "$locati
 		modalInstance.result.then(function(comment) {
 			$scope.updateComment(comment);
 		}, function() {
-			//console.log('Modal dismissed at: ' + new Date());
+			// console.log('Modal dismissed at: ' + new Date());
 		});
 
 	}

@@ -1,4 +1,4 @@
-myApp.controller("editReportController", [ "$rootScope", "$scope", "$http", "$location", "$modal", "$upload", function($rootScope, $scope, $http, $location, $modal, $upload) {
+myApp.controller("editReportController", [ "$rootScope", "$scope", "$http", "$location", "$modal", "$upload", "$translate", function($rootScope, $scope, $http, $location, $modal, $upload, $translate) {
 	if (!$rootScope.loginAccount) {
 		$location.path('/login');
 		return;
@@ -117,7 +117,8 @@ myApp.controller("editReportController", [ "$rootScope", "$scope", "$http", "$lo
 				},
 				file : $file
 			}).progress(function(evt) {
-				//console.log('percent: ' + parseInt(100.0 * evt.loaded / evt.total));
+				// console.log('percent: ' + parseInt(100.0 * evt.loaded /
+				// evt.total));
 			}).success(function(imageKey, status, headers, config) {
 				var imageUrl = "![](api/report/image/" + imageKey + ")";
 				var insertIndex = document.getElementById('reportTextArea').selectionStart;

@@ -1,4 +1,4 @@
-myApp.controller("myPageController", [ "$rootScope", "$scope", "$http", "$location", function($rootScope, $scope, $http, $location) {
+myApp.controller("myPageController", [ "$rootScope", "$scope", "$http", "$location", "$translate", function($rootScope, $scope, $http, $location, $translate) {
 	if (!$rootScope.loginAccount) {
 		$location.path('/');
 		return;

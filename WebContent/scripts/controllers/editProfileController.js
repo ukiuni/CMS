@@ -1,4 +1,4 @@
-myApp.controller("editProfileController", [ "$rootScope", "$scope", "$http", "$location", "$upload", function($rootScope, $scope, $http, $location, $upload) {
+myApp.controller("editProfileController", [ "$rootScope", "$scope", "$http", "$location", "$upload", "$translate", function($rootScope, $scope, $http, $location, $upload, $translate) {
 	if (!$rootScope.loginAccount) {
 		$location.path('/');
 		return;
@@ -14,7 +14,8 @@ myApp.controller("editProfileController", [ "$rootScope", "$scope", "$http", "$l
 				},
 				file : $file
 			}).progress(function(evt) {
-				//console.log('percent: ' + parseInt(100.0 * evt.loaded / evt.total));
+				// console.log('percent: ' + parseInt(100.0 * evt.loaded /
+				// evt.total));
 			}).success(function(imageKey, status, headers, config) {
 				$scope.editingAccount.iconUrl = "api/account/icon/" + imageKey;
 			}).error(function(data, status, headers, config) {
