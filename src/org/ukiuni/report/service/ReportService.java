@@ -85,7 +85,7 @@ public class ReportService {
 	}
 
 	private List<Fold> findFolds(Account account, Report report) {
-		return dbUtil.findList(Fold.class, new DBUtil.WhereCondition[] { new DBUtil.WhereCondition("reportKey", report.getKey()), new DBUtil.WhereCondition("account", account), new DBUtil.WhereCondition("status", Fold.STATUS_CREATED) });
+		return dbUtil.findList(Fold.class, new DBUtil.WhereCondition[] { new DBUtil.WhereCondition("reportKey", report.getKey()), new DBUtil.WhereCondition("account", account), new DBUtil.WhereCondition("status", Fold.STATUS_CREATED) }, new DBUtil.Order("createdAt", DBUtil.Order.SequenceTo.DESC));
 	}
 
 	public List<Fold> findFolds(String reportKey) {

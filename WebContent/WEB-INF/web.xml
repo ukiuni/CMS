@@ -5,7 +5,7 @@
 	version="3.0">
 	<filter>
 		<filter-name>ShowIndexHTMLFilter</filter-name>
-		<filter-class>org.ukiuni.report.action.ShowIndexHTMLFilter</filter-class>
+		<filter-class>org.ukiuni.report.ShowIndexHTMLFilter</filter-class>
 	</filter>
 	<filter-mapping>
 		<filter-name>ShowIndexHTMLFilter</filter-name>

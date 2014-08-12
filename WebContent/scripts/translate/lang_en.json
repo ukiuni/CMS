@@ -1,8 +1,8 @@
 {
-	"appName":"CMS",
+	"appName":"Open Reports",
 	"index":{
-		"read":"Easy Translate!",
-		"description":"Easy translate with AngularJS."
+		"read":"Open Reports!",
+		"description":"Builded with new new product architecture."
 	},
 	"error":{
 		"login":"Login error. Name or Password is not match.",

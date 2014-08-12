@@ -387,6 +387,12 @@ public class IntegrationTest {
 	}
 
 	@Test
+	public void testShowReportDirectly() {
+		driver.get(url("report?key=b564857c-b762-4eaf-a95e-299fa41e25b9"));
+		waitForContentPage();
+	}
+
+	@Test
 	public void testFoldStartsWithNotLogin() {
 		driver.get(url("report?key=b564857c-b762-4eaf-a95e-299fa41e25b9"));
 		waitForContentPage();

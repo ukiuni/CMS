@@ -257,7 +257,11 @@ public class DBUtil {
 		return execute(query);
 	}
 
-	public <T> List<T> findList(final Class<T> clazz, final WhereCondition[] whereConditions, final Order... orders) {
+	public <T> List<T> findList(Class<T> clazz, WhereCondition[] whereConditions, Order... orders) {
+		return findList(clazz, whereConditions, null, orders);
+	}
+
+	public <T> List<T> findList(final Class<T> clazz, final WhereCondition[] whereConditions, final Paginate paginate, final Order... orders) {
 		Work<List<T>> query = new Work<List<T>>() {
 			public List<T> execute(EntityManager em) {
 				CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -268,7 +272,11 @@ public class DBUtil {
 					cq.where(predicate);
 				}
 				prepareOrder(cb, cq, r, orders);
-				return em.createQuery(cq.select(r)).setLockMode(LockModeType.OPTIMISTIC).getResultList();
+				if (null != paginate) {
+					return em.createQuery(cq.select(r)).setFirstResult(paginate.getOffset()).setMaxResults(paginate.getLimit()).setLockMode(LockModeType.OPTIMISTIC).getResultList();
+				} else {
+					return em.createQuery(cq.select(r)).setLockMode(LockModeType.OPTIMISTIC).getResultList();
+				}
 			}
 		};
 		return execute(query);
@@ -369,6 +377,32 @@ public class DBUtil {
 
 		public enum SequenceTo {
 			ASC, DESC
+		}
+	}
+
+	public static class Paginate {
+		public int offset;
+		public int limit;
+
+		public Paginate(int offset, int limit) {
+			this.offset = offset;
+			this.limit = limit;
+		}
+
+		public int getOffset() {
+			return offset;
+		}
+
+		public void setOffset(int offset) {
+			this.offset = offset;
+		}
+
+		public int getLimit() {
+			return limit;
+		}
+
+		public void setLimit(int limit) {
+			this.limit = limit;
 		}
 	}
 }

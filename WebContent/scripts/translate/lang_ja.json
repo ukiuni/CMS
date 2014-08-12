@@ -1,8 +1,8 @@
 {
-	"appName":"CMS",
+	"appName":"Open Reports",
 	"index":{
-		"read":"簡単国際化！",
-		"description":"AngularJSでも、簡単に国際化対応ができます。"
+		"read":"情報共有",
+		"description":"新しいWebアプリのための新しいアーキテクチャによるアプリケーション"
 	},
 	"error":{
 		"login":"ログインに失敗しました。名前かパスワードが違います。",

@@ -1,8 +1,7 @@
-package org.ukiuni.report.action;
+package org.ukiuni.report;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import javax.servlet.Filter;
@@ -14,6 +13,8 @@ import javax.servlet.ServletResponse;
 import javax.servlet.annotation.WebFilter;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
+
+import org.ukiuni.report.PathAndHTMLResolver.PathAndHtml;
 
 /**
  * Servlet implementation class ShowIndexHTMLServlet
@@ -49,6 +50,9 @@ public class ShowIndexHTMLFilter implements Filter {
 		if ("/".equals(contextPath)) {
 			contextPath = "";
 		}
-		PUSH_STATE_LIST.addAll(Arrays.asList(contextPath + "/myPage", contextPath + "/editReport", contextPath + "/editProfile", contextPath + "/report", contextPath + "/login", contextPath + "/logout"));
+		List<PathAndHtml> pathAndHtmls = PathAndHTMLResolver.instance().resolve(config.getServletContext());
+		for (PathAndHtml pathAndHtml : pathAndHtmls) {
+			PUSH_STATE_LIST.add(contextPath + pathAndHtml.path);
+		}
 	}
 }
