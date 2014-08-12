@@ -10,7 +10,7 @@ myApp.controller("myPageController", [ "$rootScope", "$scope", "$http", "$locati
 	}).success(function(data) {
 		$scope.reports = data;
 	}).error(function(e) {
-		console.log("error" + e);
+		$rootScope.showAlert($translate.instant('error.loadReport'));
 	});
 	$http.get("api/account/fold", {
 		params : {
@@ -19,7 +19,7 @@ myApp.controller("myPageController", [ "$rootScope", "$scope", "$http", "$locati
 	}).success(function(data) {
 		$scope.folds = data;
 	}).error(function(e) {
-		console.log("error" + e);
+		$rootScope.showAlert($translate.instant('error.loadFolds'));
 	});
 	$http.get("api/news", {
 		params : {
@@ -28,7 +28,7 @@ myApp.controller("myPageController", [ "$rootScope", "$scope", "$http", "$locati
 	}).success(function(data) {
 		$scope.newses = data;
 	}).error(function(e) {
-		console.log("error" + e);
+		$rootScope.showAlert($translate.instant('error.loadNews'));
 	});
 	$scope.createReport = function() {
 		for ( var i in $location.search()) {

@@ -19,10 +19,11 @@ myApp.controller("reportController", [ "$rootScope", "$scope", "$http", "$locati
 		}).success(function(comments) {
 			$scope.comments = comments;
 		}).error(function(e) {
-			console.log("error " + e)
+			$rootScope.showAlert($translate.instant('error.loadComment'));
 		});
 	}).error(function(e) {
-		console.log("error" + e);
+		$rootScope.showAlert($translate.instant('error.loadReport'));
+		$location.path('/');
 	});
 	var switchFold = function(fold) {
 		if (!$rootScope.loginAccount) {
@@ -71,7 +72,7 @@ myApp.controller("reportController", [ "$rootScope", "$scope", "$http", "$locati
 		}).success(function() {
 			$scope.report.reporter.following = true;
 		}).error(function(e) {
-			console.log("error " + e)
+			$rootScope.showAlert($translate.instant('error.follow'));
 		});
 	}
 	$scope.unfollow = function() {
@@ -81,7 +82,7 @@ myApp.controller("reportController", [ "$rootScope", "$scope", "$http", "$locati
 		}).success(function() {
 			$scope.report.reporter.following = false;
 		}).error(function(e) {
-			console.log("error " + e)
+			$rootScope.showAlert($translate.instant('error.unfollow'));
 		});
 	}
 	$scope.createAccountForComment = function() {
@@ -100,7 +101,7 @@ myApp.controller("reportController", [ "$rootScope", "$scope", "$http", "$locati
 			$scope.inputMessage = "";
 			$scope.comments = comments;
 		}).error(function(e) {
-			console.log(e)
+			$rootScope.showAlert($translate.instant('error.saveComment'));
 		});
 	}
 	$scope.deleteComment = function(comment) {
@@ -112,7 +113,7 @@ myApp.controller("reportController", [ "$rootScope", "$scope", "$http", "$locati
 		}).success(function(comments) {
 			$scope.comments = comments
 		}).error(function(e) {
-			console.log(e)
+			$rootScope.showAlert($translate.instant('error.deleteComment'));
 		});
 	}
 	$scope.updateComment = function(comment) {
@@ -123,7 +124,7 @@ myApp.controller("reportController", [ "$rootScope", "$scope", "$http", "$locati
 		}).success(function(comments) {
 			$scope.comments = comments
 		}).error(function(e) {
-			console.log(e)
+			$rootScope.showAlert($translate.instant('error.saveComment'));
 		});
 	}
 	$scope.openDeleteCommentDialog = function(comment) {
@@ -146,7 +147,7 @@ myApp.controller("reportController", [ "$rootScope", "$scope", "$http", "$locati
 		modalInstance.result.then(function(comment) {
 			$scope.deleteComment(comment);
 		}, function() {
-			console.log('Modal dismissed at: ' + new Date());
+			//console.log('Modal dismissed at: ' + new Date());
 		});
 	}
 	$scope.openEditCommentDialog = function(comment) {
@@ -168,7 +169,7 @@ myApp.controller("reportController", [ "$rootScope", "$scope", "$http", "$locati
 		modalInstance.result.then(function(comment) {
 			$scope.updateComment(comment);
 		}, function() {
-			console.log('Modal dismissed at: ' + new Date());
+			//console.log('Modal dismissed at: ' + new Date());
 		});
 
 	}

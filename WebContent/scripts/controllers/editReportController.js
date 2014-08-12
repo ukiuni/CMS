@@ -22,7 +22,7 @@ myApp.controller("editReportController", [ "$rootScope", "$scope", "$http", "$lo
 		}
 	};
 	var loadFail = function(e) {
-		console.log("error" + e);
+		$rootScope.showAlert($translate.instant('error.loadReport'));
 		$location.path('/');
 	};
 	if ($location.search()["key"]) {
@@ -45,7 +45,7 @@ myApp.controller("editReportController", [ "$rootScope", "$scope", "$http", "$lo
 			$http.put("api/report", $scope.report).success(function(data) {
 				$location.search("lastAction", "{\"action\":\"saved\",\"key\":\"" + $scope.report.key + "\"}").path('/myPage');
 			}).error(function(e) {
-				console.log("error" + e);
+				$rootScope.showAlert($translate.instant('error.saveReport'));
 			});
 		} else {
 			var ModalInstanceCtrl = [ "$scope", "$modalInstance", "title", "body", "report", function($scope, $modalInstance, title, body, report) {
@@ -73,7 +73,6 @@ myApp.controller("editReportController", [ "$rootScope", "$scope", "$http", "$lo
 			modalInstance.result.then(function(deleteReportKey) {
 				$scope.deleteReport(deleteReportKey);
 			}, function() {
-				console.log('Modal dismissed at: ' + new Date());
 			});
 		}
 	};
@@ -104,7 +103,7 @@ myApp.controller("editReportController", [ "$rootScope", "$scope", "$http", "$lo
 		}).success(function() {
 			$location.search("lastAction", "{\"action\":\"deleted\",\"key\":\"" + $scope.report.key + "\"}").path('/myPage');
 		}).error(function() {
-			console.log("e");
+			$rootScope.showAlert($translate.instant('error.deleteReport'));
 		});
 	};
 	$scope.onImageSelected = function($file) {
@@ -118,7 +117,7 @@ myApp.controller("editReportController", [ "$rootScope", "$scope", "$http", "$lo
 				},
 				file : $file
 			}).progress(function(evt) {
-				console.log('percent: ' + parseInt(100.0 * evt.loaded / evt.total));
+				//console.log('percent: ' + parseInt(100.0 * evt.loaded / evt.total));
 			}).success(function(imageKey, status, headers, config) {
 				var imageUrl = "![](api/report/image/" + imageKey + ")";
 				var insertIndex = document.getElementById('reportTextArea').selectionStart;
@@ -129,7 +128,7 @@ myApp.controller("editReportController", [ "$rootScope", "$scope", "$http", "$lo
 				}
 				document.getElementById('imageInput').value = null;
 			}).error(function(data, status, headers, config) {
-				console.log("uploadFailed = " + data);
+				$rootScope.showAlert($translate.instant('error.upload'));
 			});
 		})();
 	}

@@ -14,11 +14,11 @@ myApp.controller("editProfileController", [ "$rootScope", "$scope", "$http", "$l
 				},
 				file : $file
 			}).progress(function(evt) {
-				console.log('percent: ' + parseInt(100.0 * evt.loaded / evt.total));
+				//console.log('percent: ' + parseInt(100.0 * evt.loaded / evt.total));
 			}).success(function(imageKey, status, headers, config) {
 				$scope.editingAccount.iconUrl = "api/account/icon/" + imageKey;
 			}).error(function(data, status, headers, config) {
-				console.log("uploadFailed = " + data);
+				$rootScope.showAlert($translate.instant('error.upload'));
 			});
 		})();
 	}
@@ -33,7 +33,7 @@ myApp.controller("editProfileController", [ "$rootScope", "$scope", "$http", "$l
 			$rootScope.loginAccount.accessKey = accountAccessKey;
 			$location.path('/myPage');
 		}).error(function(e) {
-			console.log(e)
+			$rootScope.showAlert($translate.instant('error.saveProfile'));
 		});
 	}
 } ]);

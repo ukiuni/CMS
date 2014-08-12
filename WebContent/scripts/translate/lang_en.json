@@ -6,7 +6,19 @@
 	},
 	"error":{
 		"login":"Login error. Name or Password is not match.",
-		"createAccount":"Fail to create account. change name and/or mail."
+		"createAccount":"Fail to create account. change name and/or mail.",
+		"upload":"File upload error. Retry please.",
+		"saveProfile":"Fail to save profile.",
+		"loadReport":"Fail to load report",
+		"saveReport":"Fail to save report Retry please.",
+		"deleteReport":"Fail to delete report. Retry please",
+		"loadFolds":"Fail to load folds",
+		"loadNews":"Fail to load news",
+		"saveComment":"Fail to comment",
+		"loadComment":"Fail to load coment",
+		"deleteComment":"Fail to delete coment",
+		"follow":"Fail to follow",
+		"unfollow":"Fail to unfollow"
 	},
 	"news":{
 		"follow":"{{accountName}} follow {{targetAccountName}}",

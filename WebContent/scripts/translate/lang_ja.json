@@ -6,7 +6,19 @@
 	},
 	"error":{
 		"login":"ログインに失敗しました。名前かパスワードが違います。",
-		"createAccount":"アカウントの作成に失敗しました。名前かメールアドレスを変更してください。"
+		"createAccount":"アカウントの作成に失敗しました。名前かメールアドレスを変更してください。",
+		"upload":"ファイルのアップロードに失敗しました。もう一度試してください。",
+		"saveProfile":"プロフィールの保存に失敗しました。",
+		"loadReport":"レボートの取得に失敗しました。",
+		"saveReport":"レポートの保存に失敗しました。もう一度試してください。",
+		"deleteReport":"レポートの削除に失敗しました。もう一度試してください。",
+		"loadFolds":"Foldの取得に失敗しました。",
+		"loadNews":"Newsの取得に失敗しました。",
+		"saveComment":"コメントに失敗しました。",
+		"loadComment":"コメントの取得に失敗しました。",
+		"deleteComment":"コメントの削除に失敗しました。",
+		"follow":"Followに失敗しました。",
+		"unfollow":"Unfollowに失敗しました。"
 	},
 	"news":{
 		"follow":"{{accountName}} が {{targetAccountName}} をフォローしました。",
