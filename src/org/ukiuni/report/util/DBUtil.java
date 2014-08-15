@@ -2,6 +2,7 @@ package org.ukiuni.report.util;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -31,6 +32,19 @@ public class DBUtil {
 	public static final String SYSTEM_ENV_FACTORYNAME_POSTFIX = "org.ukiuni.db.factoryName.postfix";
 	private static final Map<String, EntityManagerFactory> openedFactoryMap = new HashMap<String, EntityManagerFactory>();
 	private EntityManagerFactory factory;
+	private static Map<String, String> parameterMap = null;
+	static {
+		Map<String, String> parameterMap = new HashMap<String, String>();
+		List<String> loadEnvs = Arrays.asList(new String[] { "javax.persistence.jdbc.driver", "javax.persistence.jdbc.url", "javax.persistence.jdbc.user", "javax.persistence.jdbc.password" });
+		for (String envKey : loadEnvs) {
+			if (null != System.getenv(envKey)) {
+				parameterMap.put(envKey, System.getenv(envKey));
+			}
+		}
+		if (!parameterMap.isEmpty()) {
+			DBUtil.parameterMap = parameterMap;
+		}
+	}
 
 	public static DBUtil create(String factoryName) {
 		DBUtil instance = new DBUtil();
@@ -62,12 +76,19 @@ public class DBUtil {
 	}
 
 	protected EntityManagerFactory createEntityManagerFactory(String factoryName) {
-		EntityManagerFactory factory = Persistence.createEntityManagerFactory(factoryName);
-		return factory;
+		if (null != parameterMap) {
+			return Persistence.createEntityManagerFactory(factoryName, parameterMap);
+		} else {
+			return Persistence.createEntityManagerFactory(factoryName);
+		}
 	}
 
 	private EntityManager createEntityManager() {
-		return this.factory.createEntityManager();
+		if (null != parameterMap) {
+			return this.factory.createEntityManager(parameterMap);
+		} else {
+			return this.factory.createEntityManager();
+		}
 	}
 
 	public Object persist(final Object object) {
