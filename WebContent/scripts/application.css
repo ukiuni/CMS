@@ -49,10 +49,12 @@
 	padding: 3px;
 	padding-left: 10px;
 	background-color: #F0F0F0;
+	font-size: 24px;
 }
 
 .reportArea h2 {
 	border-bottom: 1px #F0F0F0 solid;
+	font-size: 22px
 }
 
 .reportArea table {
