@@ -34,8 +34,8 @@ public class DBUtil {
 	private EntityManagerFactory factory;
 	private static Map<String, String> parameterMap = null;
 	static {
-		Map<String, String> parameterMap = new HashMap<String, String>();
 		List<String> loadEnvs = Arrays.asList(new String[] { "javax.persistence.jdbc.driver", "javax.persistence.jdbc.url", "javax.persistence.jdbc.user", "javax.persistence.jdbc.password" });
+		Map<String, String> parameterMap = new HashMap<String, String>();
 		for (String envKey : loadEnvs) {
 			if (null != System.getenv(envKey)) {
 				parameterMap.put(envKey, System.getenv(envKey));
