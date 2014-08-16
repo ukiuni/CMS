@@ -3,6 +3,7 @@ package integration.test.org.ukiuni.report;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertFalse;
 
 import java.io.File;
 import java.util.List;
@@ -165,6 +166,7 @@ public class IntegrationTest {
 			}
 		});
 		assertTrue(driver.findElement(By.id("alert")).isDisplayed());
+		assertFalse(driver.findElement(By.id("alert")).getText().isEmpty());
 	}
 
 	@SuppressWarnings("unchecked")
