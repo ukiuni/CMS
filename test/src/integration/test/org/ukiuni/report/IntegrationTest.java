@@ -365,26 +365,22 @@ public class IntegrationTest {
 		driver.get(url("report?key=e8fea4ff-e624-40b1-bf9d-357cead00f82"));
 		waitForContentPage();
 
-		WebElement foldButton = null;
 		waitForElementByClassNameAndValue("btn", "Fold");
 		for (WebElement btn : driver.findElements(By.className("btn"))) {
 			if ("Fold".equals(btn.getText())) {
-				foldButton = btn;
-				break;
+				//loop for not change to unfold. reason unknown.
+				btn.click();
 			}
 		}
-		foldButton.click();
 		waitForElementByClassNameAndValue("btn", "Unfold");
 
-		foldButton = null;
 		waitForElementByClassNameAndValue("btn", "Unfold");
 		for (WebElement btn : driver.findElements(By.className("btn"))) {
 			if ("Unfold".equals(btn.getText())) {
-				foldButton = btn;
+				btn.click();
 				break;
 			}
 		}
-		foldButton.click();
 		waitForElementByClassNameAndValue("btn", "Fold");
 	}
 
@@ -399,14 +395,13 @@ public class IntegrationTest {
 		driver.get(url("report?key=b564857c-b762-4eaf-a95e-299fa41e25b9"));
 		waitForContentPage();
 
-		WebElement foldButton = null;
 		for (WebElement btn : driver.findElements(By.className("btn"))) {
 			if ("Fold".equals(btn.getText())) {
-				foldButton = btn;
+				//loop for case not change unfold reason unknown.
+				btn.click();
 				break;
 			}
 		}
-		foldButton.click();
 		waitForLoginPage();
 
 		loginWithoutWait("myName", "myPassword");
