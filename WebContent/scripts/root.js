@@ -22,28 +22,6 @@ myApp.config([ 'markedProvider', '$routeProvider', '$locationProvider', '$transl
 	$translateProvider.preferredLanguage(findLanguage());
 	$translateProvider.fallbackLanguage('en');
 	$translateProvider.useMissingTranslationHandlerLog();
-/*
-	$routeProvider.when('/', {
-		templateUrl : 'template/index.html'
-	}).when('/myPage', {
-		templateUrl : 'template/myPage.html?' + new Date().getTime()
-	}).when('/editReport', {
-		templateUrl : 'template/editReport.html?' + new Date().getTime()
-	}).when('/report', {
-		templateUrl : 'template/report.html?' + new Date().getTime()
-	}).when('/editProfile', {
-		templateUrl : 'template/editProfile.html?' + new Date().getTime()
-	}).when('/login', {
-		templateUrl : 'template/login.html?' + new Date().getTime()
-	}).when('/license', {
-		templateUrl : 'template/license.html?' + new Date().getTime()
-	}).when('/logout', {
-		templateUrl : 'template/logout.html'
-	}).otherwise({
-		redirectTo : '/'
-	});
-*/
-	//load route from dynamic-generated script "setupRouteFunciton.js";
 	setupRoute($routeProvider);
 	$locationProvider.html5Mode(true);
 } ]);
