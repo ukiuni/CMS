@@ -40,13 +40,13 @@ myApp.controller("myPageController", [ "$rootScope", "$scope", "$http", "$locati
 		$location.path('/editProfile');
 	}
 	$scope.showReport = function(reportKey) {
-		for ( var i in $location.search()) {
-			$location.search(i, null)
-		}
 		$location.search('key', reportKey);
 		$location.path('/editReport');
 	}
 	$scope.showPublishedReport = function(report, $event) {
+		for ( var i in $location.search()) {
+			$location.search(i, null);
+		}
 		$location.search("key", report.key).path("/report");
 		if ($event) {
 			$event.stopPropagation();
