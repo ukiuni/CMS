@@ -47,6 +47,7 @@ import org.ukiuni.report.entity.Report;
 import org.ukiuni.report.service.AccountService;
 import org.ukiuni.report.service.ImageService;
 import org.ukiuni.report.service.ReportService;
+import org.ukiuni.report.util.DBUtil;
 
 @Path("account")
 public class AccountAction {
@@ -103,7 +104,13 @@ public class AccountAction {
 		returnAccount.setAccessKey(accessKey);
 		return returnAccount;
 	}
-
+	@GET
+	@Path("db")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Map<String, Object> db() throws IllegalAccessException, InvocationTargetException {
+		return DBUtil.create("org.ukiuni.report").params();
+	}
+	
 	@PUT
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
