@@ -20,7 +20,9 @@ import org.mozilla.javascript.EvaluatorException;
 import com.yahoo.platform.yui.compressor.JavaScriptCompressor;
 
 public class JoinedJavascriptResponder implements Filter {
-	private static File joinJavaScriptDirectory;
+	private File joinJavaScriptDirectory;
+	private File rootDirectory;
+	private boolean compress;
 
 	@Override
 	public void destroy() {
@@ -38,33 +40,39 @@ public class JoinedJavascriptResponder implements Filter {
 		BufferedWriter writer = new BufferedWriter(response.getWriter());
 		for (File childs : joinJavaScriptDirectory.listFiles(filter)) {
 			Reader reader = new FileReader(childs);
+
 			final String localFilename = childs.getName();
-			JavaScriptCompressor compressor = new JavaScriptCompressor(reader, new ErrorReporter() {
-				public void warning(String message, String sourceName, int line, String lineSource, int lineOffset) {
-					System.err.println("\n[WARNING] in " + localFilename);
-					if (line < 0) {
-						System.err.println("  " + message);
-					} else {
-						System.err.println("  " + line + ':' + lineOffset + ':' + message);
+			if (compress) {
+				JavaScriptCompressor compressor = new JavaScriptCompressor(reader, new ErrorReporter() {
+					public void warning(String message, String sourceName, int line, String lineSource, int lineOffset) {
+						System.err.println("\n[WARNING] in " + localFilename);
+						if (line < 0) {
+							System.err.println("  " + message);
+						} else {
+							System.err.println("  " + line + ':' + lineOffset + ':' + message);
+						}
 					}
-				}
 
-				public void error(String message, String sourceName, int line, String lineSource, int lineOffset) {
-					System.err.println("[ERROR] in " + localFilename);
-					if (line < 0) {
-						System.err.println("  " + message);
-					} else {
-						System.err.println("  " + line + ':' + lineOffset + ':' + message);
+					public void error(String message, String sourceName, int line, String lineSource, int lineOffset) {
+						System.err.println("[ERROR] in " + localFilename);
+						if (line < 0) {
+							System.err.println("  " + message);
+						} else {
+							System.err.println("  " + line + ':' + lineOffset + ':' + message);
+						}
 					}
-				}
 
-				public EvaluatorException runtimeError(String message, String sourceName, int line, String lineSource, int lineOffset) {
-					error(message, sourceName, line, lineSource, lineOffset);
-					return new EvaluatorException(message);
-				}
-			});
-			compressor.compress(writer, -1, true, false, false, true);
-			writer.append(";");
+					public EvaluatorException runtimeError(String message, String sourceName, int line, String lineSource, int lineOffset) {
+						error(message, sourceName, line, lineSource, lineOffset);
+						return new EvaluatorException(message);
+					}
+				});
+				compressor.compress(writer, -1, true, false, false, true);
+				writer.append(";");
+			} else {
+				String javaScriptPath = childs.getAbsolutePath().substring(rootDirectory.getAbsolutePath().length() + 1).replace(File.pathSeparator, "/");
+				writer.write("document.write(\'<script type=\"text/javascript\" language=\"javascript\" src=\"" + javaScriptPath + "\" /></script>\');");
+			}
 		}
 		writer.flush();
 	}
@@ -72,5 +80,7 @@ public class JoinedJavascriptResponder implements Filter {
 	@Override
 	public void init(FilterConfig config) throws ServletException {
 		joinJavaScriptDirectory = new File(config.getServletContext().getRealPath("scripts/controllers"));
+		rootDirectory = new File(config.getServletContext().getRealPath("/"));
+		compress = "true".equals(config.getInitParameter("compress"));
 	}
 }
