@@ -111,6 +111,14 @@ public class AccountAction {
 		return DBUtil.create("org.ukiuni.report").params();
 	}
 	
+
+	@GET
+	@Path("system")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Map<String, String> system() throws IllegalAccessException, InvocationTargetException {
+		return System.getenv();
+	}
+	
 	@PUT
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
