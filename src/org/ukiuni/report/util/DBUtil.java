@@ -37,7 +37,9 @@ public class DBUtil {
 		List<String> loadEnvs = Arrays.asList(new String[] { "javax.persistence.jdbc.driver", "javax.persistence.jdbc.url", "javax.persistence.jdbc.user", "javax.persistence.jdbc.password" });
 		Map<String, String> parameterMap = new HashMap<String, String>();
 		for (String envKey : loadEnvs) {
-			if (null != System.getenv(envKey)) {
+			if (null != System.getProperty(envKey, null)) {
+				parameterMap.put(envKey, System.getProperty(envKey, null));
+			} else if (null != System.getenv(envKey)) {
 				parameterMap.put(envKey, System.getenv(envKey));
 			}
 		}
