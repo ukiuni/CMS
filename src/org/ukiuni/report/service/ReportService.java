@@ -1,6 +1,7 @@
 package org.ukiuni.report.service;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -131,6 +132,9 @@ public class ReportService {
 	}
 
 	public List<Report> findReportsByFolds(List<Fold> folds) {
+		if (folds.isEmpty()) {
+			return Collections.emptyList();
+		}
 		List<String> reportKeyList = new ArrayList<String>();
 		for (Fold fold : folds) {
 			reportKeyList.add(fold.getReportKey());
