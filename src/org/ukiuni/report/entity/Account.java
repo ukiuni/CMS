@@ -22,13 +22,16 @@ public class Account {
 	@Column(unique = true, nullable = false)
 	private String mail;
 	private String fullName;
+	@Column(columnDefinition = "TEXT")
 	private String profile;
+	@Column(columnDefinition = "TEXT")
 	private String passwordHashed;
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date createdAt;
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date updatedAt;
 	private String status;
+	@Column(columnDefinition = "TEXT")
 	private String iconUrl;
 	@Version
 	private long version;
