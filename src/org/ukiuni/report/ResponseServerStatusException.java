@@ -10,5 +10,4 @@ public class ResponseServerStatusException extends RuntimeException {
 		this.statusCode = statusCode;
 		this.message = message;
 	}
-
 }
