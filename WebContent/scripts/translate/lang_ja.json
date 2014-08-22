@@ -37,7 +37,5 @@
 			"drop":"ファイルをここにドロップ"
 		}
 	},
-	"social":{
-		"twitter":"ご意見、ご要望は <a href=\"http://twitter.com/ukiuni\">@ukiuni</a> まで"
-	}
+	"contact":"ご意見、ご要望は <a href=\"https://github.com/ukiuni/OpenReport/issues\">Github</a>か、<a href=\"http://twitter.com/ukiuni\">@ukiuni</a> まで"
 }

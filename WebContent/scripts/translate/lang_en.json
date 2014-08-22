@@ -37,7 +37,5 @@
 			"drop":"drop file here"
 		}
 	},
-	"social":{
-		"twitter":"Say hello to <a href=\"http://twitter.com/ukiuni\">@ukiuni</a>"
-	}
+	"contact":"Please contact to <a href=\"https://github.com/ukiuni/OpenReport/issues\">Github</a> and/or <a href=\"http://twitter.com/ukiuni\">@ukiuni</a>"
 }
