@@ -36,5 +36,8 @@
 			"select":"upload image",
 			"drop":"drop file here"
 		}
+	},
+	"social":{
+		"twitter":"Say hello to <a href=\"http://twitter.com/ukiuni\">@ukiuni</a>"
 	}
 }

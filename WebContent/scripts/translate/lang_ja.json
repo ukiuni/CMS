@@ -36,5 +36,8 @@
 			"select":"画像をアップロード",
 			"drop":"ファイルをここにドロップ"
 		}
+	},
+	"social":{
+		"twitter":"ご意見、ご要望は <a href=\"http://twitter.com/ukiuni\">@ukiuni</a> まで"
 	}
 }
