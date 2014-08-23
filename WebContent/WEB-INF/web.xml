@@ -31,6 +31,14 @@
 		<filter-name>AngularJSRouteBuilderFromTemplates</filter-name>
 		<url-pattern>/scripts/setupRouteFunction.js</url-pattern>
 	</filter-mapping>
+	<filter>
+		<filter-name>GoogleAnalyticsCodeResponder</filter-name>
+		<filter-class>org.ukiuni.report.GoogleAnalyticsCodeResponder</filter-class>
+	</filter>
+	<filter-mapping>
+		<filter-name>GoogleAnalyticsCodeResponder</filter-name>
+		<url-pattern>/scripts/track.js</url-pattern>
+	</filter-mapping>
 	<servlet>
 		<servlet-name>jersey-serlvet</servlet-name>
 		<servlet-class>org.glassfish.jersey.servlet.ServletContainer</servlet-class>

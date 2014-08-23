@@ -93,7 +93,7 @@
 			<property name="eclipselink.logging.parameters" value="true" />
 		</properties>
 	</persistence-unit>
-	<persistence-unit name="org.ukiuni.report.postgres"
+	<persistence-unit name="org.ukiuni.report"
 		transaction-type="RESOURCE_LOCAL">
 		<exclude-unlisted-classes>false</exclude-unlisted-classes>
 		<properties>

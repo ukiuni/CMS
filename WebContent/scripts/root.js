@@ -26,6 +26,9 @@ myApp.config([ 'markedProvider', '$routeProvider', '$locationProvider', '$transl
 	$locationProvider.html5Mode(true);
 } ]);
 myApp.run([ "$rootScope", "$http", "$cookies", "$location", "$timeout", function($rootScope, $http, $cookies, $location, $timeout) {
+	$rootScope.$on('$locationChangeStart', function(event, next, current) {
+		track(next);
+	});
 	$rootScope.closeAlert = function() {
 		$rootScope.alert = null;
 	}

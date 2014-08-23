@@ -26,7 +26,9 @@ public class Report {
 	private ReportPK pk;
 	@ManyToOne
 	private Account account;
+	@Column(columnDefinition = "TEXT")
 	private String title;
+	@Column(columnDefinition = "TEXT")
 	private String content;
 	@Column(nullable = false, unique = true)
 	private String key;

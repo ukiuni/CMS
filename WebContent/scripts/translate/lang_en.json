@@ -36,5 +36,6 @@
 			"select":"upload image",
 			"drop":"drop file here"
 		}
-	}
+	},
+	"contact":"Please contact to <a href=\"https://github.com/ukiuni/OpenReport/issues\">Github</a> and/or <a href=\"http://twitter.com/ukiuni\">@ukiuni</a>"
 }
