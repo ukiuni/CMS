@@ -346,6 +346,9 @@ public class DBUtil {
 			}
 		});
 	}
+	public Map<String, Object> params(){
+		return createEntityManager().getProperties();
+	}
 
 	public static class WhereCondition {
 		public String key;

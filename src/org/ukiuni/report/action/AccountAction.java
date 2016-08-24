@@ -13,6 +13,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 
 import javax.validation.constraints.Size;
 import javax.ws.rs.BadRequestException;
@@ -47,6 +48,7 @@ import org.ukiuni.report.entity.Report;
 import org.ukiuni.report.service.AccountService;
 import org.ukiuni.report.service.ImageService;
 import org.ukiuni.report.service.ReportService;
+import org.ukiuni.report.util.DBUtil;
 
 @Path("account")
 public class AccountAction {
@@ -102,6 +104,32 @@ public class AccountAction {
 		BeanUtils.copyProperties(returnAccount, account);
 		returnAccount.setAccessKey(accessKey);
 		return returnAccount;
+	}
+
+	@GET
+	@Path("db")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Map<String, Object> db() throws IllegalAccessException, InvocationTargetException {
+		return DBUtil.create("org.ukiuni.report").params();
+	}
+
+	@GET
+	@Path("system")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Map<String, String> system() throws IllegalAccessException, InvocationTargetException {
+		return System.getenv();
+	}
+
+	@GET
+	@Path("systemp")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Map<Object, Object> systemp() throws IllegalAccessException, InvocationTargetException {
+		Map<Object, Object> map = new HashMap<Object, Object>();
+		Properties p = System.getProperties();
+		for (Object key : p.keySet()) {
+			map.put(key, p.get(key));
+		}
+		return map;
 	}
 
 	@PUT

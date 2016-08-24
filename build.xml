@@ -7,6 +7,7 @@
 	<property name="source" value="1.7" />
 	<property name="classes.dir" value="WebContent/WEB-INF/classes" />
 	<property name="test.classes.dir" value="WebContent/WEB-INF/classes" />
+	<tstamp />
 	<path id="Web App Libraries.libraryclasspath">
 		<pathelement location="WebContent/WEB-INF/lib/aopalliance-repackaged-2.3.0-b05.jar" />
 		<pathelement location="WebContent/WEB-INF/lib/asm-debug-all-5.0.2.jar" />
@@ -181,6 +182,6 @@
 		</junitreport>
 	</target>
 	<target depends="build" name="makeWar">
-		<jar destfile="build/cms.war" basedir="WebContent" />
+		<jar destfile="build/OpenReport_${DSTAMP}_${TSTAMP}.war" basedir="WebContent" />
 	</target>
 </project>
